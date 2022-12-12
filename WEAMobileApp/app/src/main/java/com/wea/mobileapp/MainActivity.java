@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 //get a message
                 Thread thread = new Thread(() -> {
                     try {
+                        cmacMessage[0] = CMACProcessor.parseMessage();
                         dbHandler.getWritableDatabase();
                         dbHandler.addNewCMACAlert(cmacMessage[0].getMessageNumber());
                         HistoryFragment.setText(dbHandler.readCMACS());

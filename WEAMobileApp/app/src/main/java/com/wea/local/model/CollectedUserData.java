@@ -24,13 +24,10 @@ public class CollectedUserData {
     private String capIdentifier;
     @PropertyElement(name = "Received_Outside_Area")
     private boolean receivedOutsideArea;
-
     @PropertyElement(name = "Displayed_Outside_Area")
     private boolean displayedOutsideArea;
-
     @PropertyElement(name = "Received_After_Expired")
     private boolean receivedAfterExpired;
-
     @PropertyElement(name = "Displayed_After_Expired")
     private boolean displayedAfterExpired;
 
