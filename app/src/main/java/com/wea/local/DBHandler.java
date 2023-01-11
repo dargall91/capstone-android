@@ -38,6 +38,15 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void removeCMACAlert(String cmacMessageNo) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "WHERE " + CMAC_MESSAGE_NO_COL + " = ";
+        String[] args = {cmacMessageNo};
+
+        db.delete(db.toString(), query, args);
+    }
+
     public void insertNewDeviceLocation(String cmacMessageNo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
