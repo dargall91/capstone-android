@@ -8,22 +8,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.wea.local.DBHandler;
 import com.wea.mobileapp.databinding.HistoryFragmentBinding;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends AppCompatActivity {
 
     private HistoryFragmentBinding binding;
     private static TextView tv;
     private static ArrayList  history = new ArrayList<>();
+    private DBHandler dbHandler;
 
-    @Override
+/*    @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
@@ -32,7 +35,7 @@ public class HistoryFragment extends Fragment {
         binding = HistoryFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
-    }
+    }*/
 
 //    @Override
 ////    public void onCreate(@Nullable Bundle savedInstanceState){
@@ -45,6 +48,9 @@ public class HistoryFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        dbHandler = new DBHandler(HistoryFragment.this);
+
         System.out.println("INSIDE ONCREATE HISTORY");
         super.onCreate(savedInstanceState);
         System.out.println(savedInstanceState);
@@ -52,14 +58,16 @@ public class HistoryFragment extends Fragment {
             history = savedInstanceState.getCharSequenceArrayList("historyMessages");
             System.out.println(history.get(0));
         }
+
+
     }
 
-    public void onStart(){
+/*    public void onStart(){
         super.onStart();
         tv = (TextView)getView().findViewById(R.id.textview_second);
-    }
+    }*/
 
-    @Override
+ /*   @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         System.out.println("INSIDE ONSAVEINSTANCE");
@@ -84,7 +92,7 @@ public class HistoryFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
+*/
     public static void setText(ArrayList messages) {
         String text = "";
         history = messages;
