@@ -51,6 +51,10 @@ public class HistoryFragment extends AppCompatActivity {
 
         dbHandler = new DBHandler(HistoryFragment.this);
 
+        // test add alert to db instance
+        dbHandler.addNewCMACAlert("11111111");
+
+
         System.out.println("INSIDE ONCREATE HISTORY");
         super.onCreate(savedInstanceState);
         System.out.println(savedInstanceState);
