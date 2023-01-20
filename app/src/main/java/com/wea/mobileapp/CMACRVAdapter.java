@@ -30,6 +30,16 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
         return new ViewHolder(view);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return cmacMessageModelArrayList.size();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView cmacAlertID, cmacSender, cmacMessageType, capIdentifier;
 
