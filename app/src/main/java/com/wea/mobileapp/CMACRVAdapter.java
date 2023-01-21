@@ -32,7 +32,11 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        CMACMessageModel modal = cmacMessageModelArrayList.get(position);
+        holder.cmacAlertID.setText(modal.getMessageNumber());
+        holder.capIdentifier.setText(modal.getCapIdentifier());
+        holder.cmacMessageType.setText(modal.getMessageType());
+        holder.cmacSender.setText(modal.getSender());
     }
 
     @Override
