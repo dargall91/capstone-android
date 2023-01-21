@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="3dp"
-                android:text="@string/cmac_sender"
+                android:text="cmac_sender"
                 android:textColor="@color/black"/>
 
             <TextView
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="3dp"
-                android:text="@string/cmac_type"
+                android:text="cmac_type"
                 android:textColor="@color/black"/>
 
         </LinearLayout>
@@ -54,7 +54,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:padding="3dp"
-            android:text="@string/cmac_cap_id"
+            android:text="cmac_cap_id"
             android:textColor="@color/black"/>
 
     </LinearLayout>

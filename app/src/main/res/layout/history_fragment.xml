@@ -26,6 +26,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textview_second" />
 
-    <include layout="@layout/table_fragment" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
