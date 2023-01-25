@@ -49,6 +49,9 @@ public class HistoryFragment extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.history_fragment);
+
         dbHandler = new DBHandler(HistoryFragment.this);
 
         // test add alert to db instance
@@ -56,12 +59,14 @@ public class HistoryFragment extends AppCompatActivity {
 
 
         System.out.println("INSIDE ONCREATE HISTORY");
-        super.onCreate(savedInstanceState);
+
         System.out.println(savedInstanceState);
         if (savedInstanceState != null){
             history = savedInstanceState.getCharSequenceArrayList("historyMessages");
             System.out.println(history.get(0));
         }
+
+
 
 
     }
@@ -78,19 +83,8 @@ public class HistoryFragment extends AppCompatActivity {
         outState.putStringArrayList("historyMessages", history);
         System.out.println(outState);
     }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        binding.homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(HistoryFragment.this)
-                        .navigate(R.id.action_HistoryFragment_to_HomeFragment);
-            }
-        });
-    }
-
+*/
+/*
     @Override
     public void onDestroyView() {
         super.onDestroyView();
