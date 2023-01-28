@@ -19,7 +19,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class HistoryFragment extends AppCompatActivity {
+public class HistoryFragment extends Fragment {
 
     private HistoryFragmentBinding binding;
     private static TextView tv;
@@ -52,7 +52,7 @@ public class HistoryFragment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history_fragment);
 
-        dbHandler = new DBHandler(HistoryFragment.this);
+        dbHandler = new DBHandler(this.getActivity());
 
         // test add alert to db instance
         dbHandler.addNewCMACAlert("11111111");
@@ -69,6 +69,9 @@ public class HistoryFragment extends AppCompatActivity {
 
 
 
+    }
+
+    private void setContentView(int history_fragment) {
     }
 
 /*    public void onStart(){
