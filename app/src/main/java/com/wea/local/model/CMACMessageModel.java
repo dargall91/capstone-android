@@ -95,4 +95,5 @@ public class CMACMessageModel {
     public  String getLongMessage(String language) {
         return alertInfo.getLongMessage(language);
     }
+
 }

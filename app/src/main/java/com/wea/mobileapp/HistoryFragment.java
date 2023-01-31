@@ -18,6 +18,7 @@ import com.wea.mobileapp.databinding.HistoryFragmentBinding;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HistoryFragment extends Fragment {
 
@@ -55,7 +56,7 @@ public class HistoryFragment extends Fragment {
         dbHandler = new DBHandler(this.getActivity());
 
         // test add alert to db instance
-        dbHandler.addNewCMACAlert("11111111");
+        dbHandler.addNewCMACAlert("11111121");
 
 
         System.out.println("INSIDE ONCREATE HISTORY");
@@ -66,8 +67,7 @@ public class HistoryFragment extends Fragment {
             System.out.println(history.get(0));
         }
 
-
-
+        this.requireActivity().deleteDatabase(dbHandler.getDatabaseName());
 
     }
 
