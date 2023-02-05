@@ -58,16 +58,11 @@ public class HistoryFragment extends Fragment {
         // test add alert to db instance
         dbHandler.addNewCMACAlert("11111121");
 
-
-        System.out.println("INSIDE ONCREATE HISTORY");
-
         System.out.println(savedInstanceState);
         if (savedInstanceState != null){
             history = savedInstanceState.getCharSequenceArrayList("historyMessages");
             System.out.println(history.get(0));
         }
-
-        this.requireActivity().deleteDatabase(dbHandler.getDatabaseName());
 
     }
 
@@ -97,14 +92,12 @@ public class HistoryFragment extends Fragment {
     public static void setText(ArrayList messages) {
         String text = "";
         history = messages;
-        System.out.println("PRINTING OUT CMAC MESSAGE 2");
+
         for (int i = 0; i <= messages.size() - 1; i++){
             text += messages.get(i).toString();
             text += "\n\n";
         }
 
-        System.out.println("INSIDE SET TEXT");
-        System.out.println(text);
         if (tv != null){
             System.out.println("TV Not Null");
             tv.setText(text);
