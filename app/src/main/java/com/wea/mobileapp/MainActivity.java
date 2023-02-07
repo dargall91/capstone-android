@@ -147,7 +147,10 @@ public class MainActivity extends AppCompatActivity {
 
                 getWeaAlertDialog(cmacMessage, view).show();
 
-                LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
+                boolean locationServicesOn = LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
+
+                System.out.println("PRINTING LOCATION SERVICES");
+                System.out.println(locationServicesOn);
 
                 String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
                 Double[] myPoint = {40.8518, 14.2681};
