@@ -68,7 +68,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel());
+                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)));
             } while (cursorCMAC.moveToNext());
         }
 

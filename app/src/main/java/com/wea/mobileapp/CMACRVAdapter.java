@@ -34,9 +34,6 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CMACMessageModel modal = cmacMessageModelArrayList.get(position);
         holder.cmacAlertID.setText(modal.getMessageNumber());
-        holder.capIdentifier.setText(modal.getCapIdentifier());
-        holder.cmacMessageType.setText(modal.getMessageType());
-        holder.cmacSender.setText(modal.getSender());
     }
 
     @Override
@@ -45,14 +42,11 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView cmacAlertID, cmacSender, cmacMessageType, capIdentifier;
+        private TextView cmacAlertID;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cmacAlertID = itemView.findViewById(R.id.idCMACAlertID);
-            cmacSender = itemView.findViewById(R.id.idCMACSender);
-            cmacMessageType = itemView.findViewById(R.id.idCMACMessageType);
-            capIdentifier = itemView.findViewById(R.id.idCMACCapIdentifier);
         }
     }
 }
