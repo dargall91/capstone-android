@@ -55,10 +55,6 @@ public class HistoryFragment extends Fragment {
 
         dbHandler = new DBHandler(this.getActivity());
 
-        // test add alert to db instance
-        dbHandler.addNewCMACAlert("11111121");
-
-        System.out.println(savedInstanceState);
         if (savedInstanceState != null){
             history = savedInstanceState.getCharSequenceArrayList("historyMessages");
             System.out.println(history.get(0));

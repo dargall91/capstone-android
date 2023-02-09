@@ -25,12 +25,7 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + CMAC_ALERT_TABLE_NAME + " ("
-                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL, "
-                + CMAC_SENDER_NO_COL + " TEXT,"
-                + CMAC_DATETIME_NO_COL + " TEXT,"
-                + CMAC_MESSAGE_TYPE_NO_COL + " TEXT,"
-                + CMAC_CAP_ID_NO_COL + " TEXT)";
-
+                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL)";
         db.execSQL(query);
     }
 
