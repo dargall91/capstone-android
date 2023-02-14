@@ -20,6 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.wea.local.CMACProcessor;
+import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
 import com.wea.local.model.CMACMessageModel;
 import com.wea.mobileapp.databinding.ActivityMainBinding;
@@ -154,6 +155,10 @@ public class MainActivity extends AppCompatActivity {
 
                 String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
                 Double[] myPoint = {40.8518, 14.2681};
+
+                Double[] info = DistanceOutsidePolygon.closestPointOnPolygon(myPoint, coords);
+                System.out.println("CHECKING DISTANCE FROM POLYGON");
+                System.out.println(info[0] + " " + info[1] +  " " + info[2]);
 
                 boolean inside = LocationUtils.isInsideArea(coords, myPoint);
                 System.out.println("CHECKING INSIDE POLYGON");
