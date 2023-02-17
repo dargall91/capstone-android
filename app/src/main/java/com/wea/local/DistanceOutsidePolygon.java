@@ -36,13 +36,21 @@ public class DistanceOutsidePolygon {
     public static Double[] closestPointOnPolygon(Double[] point, String coords) {
 
         String[] coordsSplit = coords.split(" ");
+//        String[] x = new String[coordsSplit.length];
+//        String[] y = new String[coordsSplit.length];
 
         ArrayList<Double[]> poly = new ArrayList<>();
 
-        for(int i = 0; i < coordsSplit.length; i++){
-            Double[] singlePoint = {Double.parseDouble(coordsSplit[0]), Double.parseDouble(coordsSplit[1])};
+        for (int i = 0; i < coordsSplit.length; i++){
+            String[] temp = coordsSplit[i].split(",");
+            Double[] singlePoint = {Double.parseDouble(temp[0]), Double.parseDouble(temp[1])};
             poly.add(singlePoint);
         }
+
+//
+//        for(int i = 0; i < coordsSplit.length; i++){
+//
+//        }
 
         Double shortestDist = Double.MAX_VALUE;
         Double[] closestPointOnPoly = poly.get(0);
