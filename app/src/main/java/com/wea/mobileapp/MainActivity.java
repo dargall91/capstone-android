@@ -18,6 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.wea.interfaces.WeaApiInterface;
+import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
 import com.wea.local.model.CMACMessageModel;
 import com.wea.local.model.CollectedUserData;
@@ -136,10 +137,17 @@ public class MainActivity extends AppCompatActivity {
 
                 getWeaAlertDialog(message, userData, view).show();
 
-                LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
+                boolean locationServicesOn = LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
+
+                System.out.println("PRINTING LOCATION SERVICES");
+                System.out.println(locationServicesOn);
 
                 String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
                 Double[] myPoint = {40.8518, 14.2681};
+
+                Double[] info = DistanceOutsidePolygon.closestPointOnPolygon(myPoint, coords);
+                System.out.println("CHECKING DISTANCE FROM POLYGON");
+                System.out.println(info[0] + " " + info[1] +  " " + info[2]);
 
                 boolean inside = LocationUtils.isInsideArea(coords, myPoint);
                 System.out.println("CHECKING INSIDE POLYGON");

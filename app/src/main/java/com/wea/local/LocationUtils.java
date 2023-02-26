@@ -52,13 +52,16 @@ public class LocationUtils {
      * Method to get the GPS Location of the device.
      * CURRENTLY THE LOCATION IS PRINTED TO LOGCAT.
      */
-    public static void getGPSLocation(Context context, Activity activity) {
+    public static boolean getGPSLocation(Context context, Activity activity) {
         globalActivity = activity;
         globalContext = context;
         init();
+
+        boolean gpsServices = isGPSEnabled();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (isGPSEnabled()) {
+                if (gpsServices) {
 
                     LocationServices.getFusedLocationProviderClient(activity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
                         @Override
@@ -80,11 +83,14 @@ public class LocationUtils {
                     }, Looper.getMainLooper());
                 } else {
                     turnOnGPS();
+                    gpsServices = isGPSEnabled();
                 }
             } else {
                 activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
+
+        return gpsServices;
     }
 
     /**
