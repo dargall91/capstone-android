@@ -1,12 +1,10 @@
 package com.wea.models;
 
-import java.time.OffsetDateTime;
-
 public class CollectedDeviceData {
     private int messageNumber;
     private String capIdentifier;
-    private OffsetDateTime timeReceived;
-    private OffsetDateTime timeDisplayed;
+    private String timeReceived;
+    private String timeDisplayed;
     private boolean receivedInside;
     private boolean displayedInside;
     private boolean messagePresented;
@@ -36,19 +34,19 @@ public class CollectedDeviceData {
         this.capIdentifier = capIdentifier;
     }
 
-    public OffsetDateTime getTimeReceived() {
+    public String getTimeReceived() {
         return timeReceived;
     }
 
-    public void setTimeReceived(OffsetDateTime timeReceived) {
+    public void setTimeReceived(String timeReceived) {
         this.timeReceived = timeReceived;
     }
 
-    public OffsetDateTime getTimeDisplayed() {
+    public String getTimeDisplayed() {
         return timeDisplayed;
     }
 
-    public void setTimeDisplayed(OffsetDateTime timeDisplayed) {
+    public void setTimeDisplayed(String timeDisplayed) {
         this.timeDisplayed = timeDisplayed;
     }
 

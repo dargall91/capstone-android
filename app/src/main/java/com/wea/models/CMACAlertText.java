@@ -12,6 +12,14 @@ public class CMACAlertText {
 
     public CMACAlertText() { }
 
+    public void setShortMessage(String shortMessage) {
+        this.shortMessage = shortMessage;
+    }
+
+    public void setLongMessage(String longMessage) {
+        this.longMessage = longMessage;
+    }
+
     public String getShortMessage() {
         return shortMessage;
     }

@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         WeaApiInterface.setServerIp(getApplicationContext());
+        LocationUtils.init(getApplicationContext(), this);
 
         binding.getMessageButton.setOnClickListener(getMessage());
     }
@@ -104,59 +105,55 @@ public class MainActivity extends AppCompatActivity {
      * @return The OnClickListener event
      */
     private View.OnClickListener getMessage() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
+        return view -> {
+            Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, "getMessage");
+
+            //if no message is received
+            if (message == null) {
+                Snackbar.make(view, "No incoming messages found", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-                CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, "getMessage");
-
-                //if no message is received
-                if (message == null) {
-                    Snackbar.make(view, "No incoming messages found", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    return;
-                } else {
-                    Snackbar.make(view, "Retrieved message from server", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-
-                //init collected data
-                CollectedDeviceData deviceData = new CollectedDeviceData(message, true, isInsideArea(message));
-
-                dbHandler.getWritableDatabase();
-                dbHandler.addNewCMACAlert(message.getMessageNumber());
-                HistoryFragment.setText(dbHandler.readCMACS());
-
-                Random rand = new Random();
-                int randomSleep = rand.nextInt(100) + 1;
-
-                //simulate a short random time between receiving and displaying the message
-                try {
-                    Thread.sleep(randomSleep);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                getWeaAlertDialog(message, deviceData, view).show();
-
-                boolean locationServicesOn = LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
-
-                System.out.println("PRINTING LOCATION SERVICES");
-                System.out.println(locationServicesOn);
-
-                String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
-                Double[] myPoint = {40.8518, 14.2681};
-
-                Double[] info = DistanceOutsidePolygon.closestPointOnPolygon(myPoint, coords);
-                System.out.println("CHECKING DISTANCE FROM POLYGON");
-                System.out.println(info[0] + " " + info[1] +  " " + info[2]);
-
-                boolean inside = LocationUtils.isInsideArea(coords, myPoint);
-                System.out.println("CHECKING INSIDE POLYGON");
-                System.out.println(inside);
+                return;
+            } else {
+                Snackbar.make(view, "Retrieved message from server", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
+
+            CollectedDeviceData deviceData = new CollectedDeviceData(message, LocationUtils.isGPSEnabled(), isInsideArea(message));
+
+//            dbHandler.getWritableDatabase();
+//            dbHandler.addNewCMACAlert(message.getMessageNumber());
+//            HistoryFragment.setText(dbHandler.readCMACS());
+
+            Random rand = new Random();
+            int randomSleep = rand.nextInt(100) + 1;
+
+            //simulate a short random time between receiving and displaying the message
+            try {
+                Thread.sleep(randomSleep);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            getWeaAlertDialog(message, deviceData, view).show();
+
+            boolean locationServicesOn = LocationUtils.isGPSEnabled();
+
+            System.out.println("PRINTING LOCATION SERVICES");
+            System.out.println(locationServicesOn);
+
+            String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
+            Double[] myPoint = {40.8518, 14.2681};
+
+            Double[] info = DistanceOutsidePolygon.closestPointOnPolygon(myPoint, coords);
+            System.out.println("CHECKING DISTANCE FROM POLYGON");
+            System.out.println(info[0] + " " + info[1] +  " " + info[2]);
+
+            boolean inside = LocationUtils.isInsideArea(coords, myPoint);
+            System.out.println("CHECKING INSIDE POLYGON");
+            System.out.println(inside);
         };
     }
 
@@ -193,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                     vibrator.cancel();
                     mediaPlayer.stop();
                     //Handle device data upload on close
-                    AtomicBoolean success = new AtomicBoolean(false);
                     String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
 
                     if (locationUri != null) {
@@ -221,8 +217,15 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isInsideArea(CMACMessage message) {
         String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
-        Coordinate currentLocation = LocationUtils.getGPSLocation(getApplicationContext(), MainActivity.this);
+        if (polygon == null) {
+            return false;
+        }
+        Coordinate currentLocation = LocationUtils.getGPSLocation();
+        if (currentLocation == null) {
+            return false;
+        }
         Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
+//        Double[] currentCoordinates = { 100.0, 100.0 };
         return LocationUtils.isInsideArea(polygon, currentCoordinates);
     }
 }

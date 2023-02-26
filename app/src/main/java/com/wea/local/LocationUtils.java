@@ -44,30 +44,29 @@ public class LocationUtils {
     /**
      * Initializes Location Request
      */
-    private static void init() {
+    public static void init(Context context, Activity activity) {
+        globalActivity = activity;
+        globalContext = context;
         globalLocationRequest = LocationRequest.create();
         globalLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         globalLocationRequest.setInterval(5000);
         globalLocationRequest.setFastestInterval(2000);
+        turnOnGPS();
     }
 
     /**
      * Method to get the GPS Location of the device.
      * CURRENTLY THE LOCATION IS PRINTED TO LOGCAT.
      */
-    public static Coordinate getGPSLocation(Context context, Activity activity) {
+    public static Coordinate getGPSLocation() {
         AtomicReference<Coordinate> coordinate = new AtomicReference<>();
-        globalActivity = activity;
-        globalContext = context;
-        init();
 
         boolean gpsServices = isGPSEnabled();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(globalContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 if (gpsServices) {
-
-                    LocationServices.getFusedLocationProviderClient(activity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
+                    LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
                         @Override
                         public void onLocationResult(@NonNull LocationResult locationResult) {
                             super.onLocationResult(locationResult);
@@ -83,7 +82,6 @@ public class LocationUtils {
                                 System.out.println(latitude);
                                 System.out.println(longitude);
                             }
-
                         }
                     }, Looper.getMainLooper());
                 } else {
@@ -91,7 +89,7 @@ public class LocationUtils {
                     gpsServices = isGPSEnabled();
                 }
             } else {
-                activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
 
@@ -103,7 +101,7 @@ public class LocationUtils {
      *
      * @return A boolean for gps enabled
      */
-    private static boolean isGPSEnabled() {
+    public static boolean isGPSEnabled() {
         LocationManager locationManager = null;
         boolean isEnabled = false;
 
@@ -129,31 +127,28 @@ public class LocationUtils {
         Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(globalContext.getApplicationContext())
                 .checkLocationSettings(builder.build());
 
-        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+        result.addOnCompleteListener(task -> {
 
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(globalContext, "GPS is already tured on", Toast.LENGTH_SHORT).show();
+            try {
+                LocationSettingsResponse response = task.getResult(ApiException.class);
+                Toast.makeText(globalContext, "GPS is already tured on", Toast.LENGTH_SHORT).show();
 
-                } catch (ApiException e) {
+            } catch (ApiException e) {
 
-                    switch (e.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                switch (e.getStatusCode()) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
 
-                            try {
-                                ResolvableApiException resolvableApiException = (ResolvableApiException) e;
-                                resolvableApiException.startResolutionForResult(globalActivity, 2);
-                            } catch (IntentSender.SendIntentException ex) {
-                                ex.printStackTrace();
-                            }
-                            break;
+                        try {
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) e;
+                            resolvableApiException.startResolutionForResult(globalActivity, 2);
+                        } catch (IntentSender.SendIntentException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
 
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            //Device does not have location
-                            break;
-                    }
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        //Device does not have location
+                        break;
                 }
             }
         });

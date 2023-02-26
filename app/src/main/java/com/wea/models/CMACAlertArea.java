@@ -13,12 +13,22 @@ public class CMACAlertArea {
     private String polygon;
     @PropertyElement(name = "CMAC_circle")
     private String circle;
-    @Element(name = "CMAC_cmas_geocode")
-    private List<String> geocodeList = new ArrayList<>();
     @Element(name = "CMAC_cap_geocode")
     private List<CMACCapGeocode> capGeocodeList = new ArrayList<>();
 
     public CMACAlertArea() { }
+
+    public void setPolygon(String polygon) {
+        this.polygon = polygon;
+    }
+
+    public void setCircle(String circle) {
+        this.circle = circle;
+    }
+
+    public void setCapGeocodeList(List<CMACCapGeocode> capGeocodeList) {
+        this.capGeocodeList = capGeocodeList;
+    }
 
     public String getPolygon() {
         return polygon;
@@ -26,10 +36,6 @@ public class CMACAlertArea {
 
     public String getCircle() {
         return circle;
-    }
-
-    public List<String> getGeocodeList() {
-        return geocodeList;
     }
 
     public List<CMACCapGeocode> getCapGeocodeList() {

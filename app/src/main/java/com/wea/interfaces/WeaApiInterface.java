@@ -3,6 +3,7 @@ package com.wea.interfaces;
 import android.content.Context;
 import android.content.res.AssetManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tickaroo.tikxml.TikXml;
 
 import java.io.BufferedReader;
@@ -24,6 +25,7 @@ import okio.Sink;
 public class WeaApiInterface {
     private static final OkHttpClient client = new OkHttpClient();
     private static TikXml parser = new TikXml.Builder().exceptionOnUnreadXml(false).build();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private static final String HTTP = "http://";
     private static final String PORT_PATH = ":8080/wea/api/";
     private static String SERVER_IP;
@@ -106,10 +108,9 @@ public class WeaApiInterface {
 
         Thread thread = new Thread(() -> {
             try {
-                BufferedSink sink = Okio.buffer((Sink) new Buffer());
-                parser.write(sink, payload);
-                String payloadString = new String(sink.getBuffer().readByteArray(), StandardCharsets.UTF_8);
-                RequestBody body = RequestBody.create(payloadString, MediaType.parse("application/xml"));
+                String payloadString = mapper.writer().writeValueAsString(payload);
+                RequestBody body = RequestBody.create(payloadString, MediaType.parse("application/json"));
+
                 Request request = new Request.Builder()
                         .url(HTTP + SERVER_IP + PORT_PATH + endpoint)
                         .post(body)

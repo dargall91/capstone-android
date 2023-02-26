@@ -10,7 +10,14 @@ public class CMACCapGeocode {
     @PropertyElement(name = "value")
     private String value;
 
-    public CMACCapGeocode() {
+    public CMACCapGeocode() { }
+
+    public void setValueName(String valueName) {
+        this.valueName = valueName;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getValueName() {
