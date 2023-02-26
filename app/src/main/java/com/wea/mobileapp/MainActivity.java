@@ -24,6 +24,9 @@ import com.wea.local.model.CMACMessageModel;
 import com.wea.local.model.CollectedUserData;
 import com.wea.mobileapp.databinding.ActivityMainBinding;
 import com.wea.local.DBHandler;
+import com.wea.models.CMACMessage;
+import com.wea.models.CollectedDeviceData;
+import com.wea.models.Coordinate;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                CMACMessageModel message = WeaApiInterface.getSingleResult(CMACMessageModel.class, "getMessage");
+                CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, "getMessage");
 
                 //if no message is received
                 if (message == null) {
@@ -119,7 +122,8 @@ public class MainActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }
 
-                CollectedUserData userData = new CollectedUserData("048151", message);
+                //init collected data
+                CollectedDeviceData deviceData = new CollectedDeviceData(message, true, isInsideArea(message));
 
                 dbHandler.getWritableDatabase();
                 dbHandler.addNewCMACAlert(message.getMessageNumber());
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                getWeaAlertDialog(message, userData, view).show();
+                getWeaAlertDialog(message, deviceData, view).show();
 
                 boolean locationServicesOn = LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
 
@@ -176,21 +180,21 @@ public class MainActivity extends AppCompatActivity {
      * @param view        The view hosting the AlertDialog
      * @return A WEA AlertDialog
      */
-    private AlertDialog getWeaAlertDialog(CMACMessageModel message, CollectedUserData userData, View view) {
+    private AlertDialog getWeaAlertDialog(CMACMessage message, CollectedDeviceData deviceData, View view) {
         MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.emergency_alert);
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         AlertDialog.Builder weaAlertBuilder = new AlertDialog.Builder(MainActivity.this)
-                .setTitle(message.getShortMessage("english"))
+                .setTitle(message.getAlertInfo().getAlertTextList().get(0).getShortMessage())
                 .setIcon(R.drawable.alert_icon)
-                .setMessage(message.getLongMessage("english"))
+                .setMessage(message.getAlertInfo().getAlertTextList().get(0).getLongMessage())
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     vibrator.cancel();
                     mediaPlayer.stop();
                     //Handle device data upload on close
                     AtomicBoolean success = new AtomicBoolean(false);
-                    String locationUri = WeaApiInterface.postGetUri("upload", userData);
+                    String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
 
                     if (locationUri != null) {
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
@@ -203,8 +207,8 @@ public class MainActivity extends AppCompatActivity {
 
         final AlertDialog weaAlertDialog = weaAlertBuilder.create();
         weaAlertDialog.setOnShowListener(dialogInterface -> {
-            //Handle setting device on message display
-            userData.setDisplayData("", message);
+            //set message is inside area
+            deviceData.setDisplayedInside(isInsideArea(message));
             //set vibration and sound effects
             long[] vibrationPatter = {200, 1900, 150};
             vibrator.vibrate(VibrationEffect.createWaveform(vibrationPatter, 0));
@@ -213,5 +217,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return weaAlertDialog;
+    }
+
+    private boolean isInsideArea(CMACMessage message) {
+        String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
+        Coordinate currentLocation = LocationUtils.getGPSLocation(getApplicationContext(), MainActivity.this);
+        Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
+        return LocationUtils.isInsideArea(polygon, currentCoordinates);
     }
 }

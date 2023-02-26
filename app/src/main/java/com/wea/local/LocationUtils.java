@@ -27,10 +27,13 @@ import androidx.core.app.ActivityCompat;
 
 import com.snatik.polygon.Point;
 import com.snatik.polygon.Polygon;
+import com.wea.models.Coordinate;
 
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LocationUtils {
 
@@ -52,7 +55,8 @@ public class LocationUtils {
      * Method to get the GPS Location of the device.
      * CURRENTLY THE LOCATION IS PRINTED TO LOGCAT.
      */
-    public static boolean getGPSLocation(Context context, Activity activity) {
+    public static Coordinate getGPSLocation(Context context, Activity activity) {
+        AtomicReference<Coordinate> coordinate = new AtomicReference<>();
         globalActivity = activity;
         globalContext = context;
         init();
@@ -73,6 +77,7 @@ public class LocationUtils {
                                 int index = locationResult.getLocations().size() - 1;
                                 double latitude = locationResult.getLocations().get(index).getLatitude();
                                 double longitude = locationResult.getLocations().get(index).getLongitude();
+                                coordinate.set(new Coordinate(latitude, longitude));
 
                                 System.out.println("GETTING DEVICE LOCATION");
                                 System.out.println(latitude);
@@ -90,7 +95,7 @@ public class LocationUtils {
             }
         }
 
-        return gpsServices;
+        return coordinate.get();
     }
 
     /**
