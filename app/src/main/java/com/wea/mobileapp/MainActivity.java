@@ -2,7 +2,6 @@ package com.wea.mobileapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
@@ -11,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -19,9 +17,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.wea.local.CMACProcessor;
+import com.wea.interfaces.WeaApiInterface;
 import com.wea.local.LocationUtils;
 import com.wea.local.model.CMACMessageModel;
+import com.wea.local.model.CollectedUserData;
 import com.wea.mobileapp.databinding.ActivityMainBinding;
 import com.wea.local.DBHandler;
 
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        CMACProcessor.setServerIp(getApplicationContext());
+        WeaApiInterface.setServerIp(getApplicationContext());
 
         binding.getMessageButton.setOnClickListener(getMessage());
     }
@@ -90,8 +89,13 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Defines the OnClickListener for the getMessageButton
-     * Clicking the button will triggger all three steps of the CMACProcessor class and display
-     * a WEA on the screen
+     * Clicking the button will trigger the following procedure:
+     * 1. Get a message from the API (if no message is found, take no no further action)
+     * 2. Timestamp the time it was received
+     * 3. Display the message
+     * 4. Timestamp the time it was displayed
+     * 5. Determine if the user was inside the target area
+     * 6. Upload the collected data to the api
      *
      * @return The OnClickListener event
      */
@@ -99,34 +103,13 @@ public class MainActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final CMACMessageModel[] cmacMessage = new CMACMessageModel[1];
-
-
                 Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                //get a message
-                Thread thread = new Thread(() -> {
-                    try {
-                        cmacMessage[0] = CMACProcessor.parseMessage();
-                        dbHandler.getWritableDatabase();
-                        dbHandler.addNewCMACAlert(cmacMessage[0].getMessageNumber());
-                        HistoryFragment.setText(dbHandler.readCMACS());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
-
-                thread.start();
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                CMACMessageModel message = WeaApiInterface.getSingleResult(CMACMessageModel.class, "getMessage");
 
                 //if no message is received
-                if (cmacMessage[0] == null) {
+                if (message == null) {
                     Snackbar.make(view, "No incoming messages found", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     return;
@@ -134,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar.make(view, "Retrieved message from server", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
+
+                CollectedUserData userData = new CollectedUserData("048151", message);
+
+                dbHandler.getWritableDatabase();
+                dbHandler.addNewCMACAlert(message.getMessageNumber());
+                HistoryFragment.setText(dbHandler.readCMACS());
 
                 Random rand = new Random();
                 int randomSleep = rand.nextInt(100) + 1;
@@ -145,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                getWeaAlertDialog(cmacMessage, view).show();
+                getWeaAlertDialog(message, userData, view).show();
 
                 LocationUtils.getGPSLocation(MainActivity.this, MainActivity.this);
 
@@ -155,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 boolean inside = LocationUtils.isInsideArea(coords, myPoint);
                 System.out.println("CHECKING INSIDE POLYGON");
                 System.out.println(inside);
-
             }
         };
     }
@@ -176,42 +164,27 @@ public class MainActivity extends AppCompatActivity {
      * Creates and returns an AlertDialog that displays a WEA message. The Dialog also handles setting the user data
      * for when the alert is displayed as well as upload the data to the server
      *
-     * @param cmacMessage The CMAC Message to be displayed, this array should contain only one element
+     * @param message The CMAC Message to be displayed, this array should contain only one element
      * @param view        The view hosting the AlertDialog
      * @return A WEA AlertDialog
      */
-    private AlertDialog getWeaAlertDialog(CMACMessageModel[] cmacMessage, View view) {
+    private AlertDialog getWeaAlertDialog(CMACMessageModel message, CollectedUserData userData, View view) {
         MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.emergency_alert);
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         AlertDialog.Builder weaAlertBuilder = new AlertDialog.Builder(MainActivity.this)
-                .setTitle(cmacMessage[0].getShortMessage("english"))
+                .setTitle(message.getShortMessage("english"))
                 .setIcon(R.drawable.alert_icon)
-                .setMessage(cmacMessage[0].getLongMessage("english"))
+                .setMessage(message.getLongMessage("english"))
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     vibrator.cancel();
                     mediaPlayer.stop();
                     //Handle device data upload on close
                     AtomicBoolean success = new AtomicBoolean(false);
+                    String locationUri = WeaApiInterface.postGetUri("upload", userData);
 
-                    Thread thread = new Thread(() -> {
-                        try {
-                            success.set(CMACProcessor.uploadUserData());
-                            Log.i("success", success.toString());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-                    thread.start();
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (success.get()) {
+                    if (locationUri != null) {
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     } else {
@@ -223,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         final AlertDialog weaAlertDialog = weaAlertBuilder.create();
         weaAlertDialog.setOnShowListener(dialogInterface -> {
             //Handle setting device on message display
-            CMACProcessor.setDisplayData(MainActivity.this, cmacMessage[0]);
+            userData.setDisplayData("", message);
             //set vibration and sound effects
             long[] vibrationPatter = {200, 1900, 150};
             vibrator.vibrate(VibrationEffect.createWaveform(vibrationPatter, 0));
@@ -233,6 +206,4 @@ public class MainActivity extends AppCompatActivity {
 
         return weaAlertDialog;
     }
-
-//    private
 }

@@ -41,11 +41,11 @@ dependencies {
     implementation 'com.tickaroo.tikxml:core:0.8.13'
     implementation 'com.tickaroo.tikxml:annotation:0.8.13'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-    implementation files('WEAMobileApp/libs')
-    implementation files('..\\libs\\polygon-1.0.2.jar')
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation files('../libs/polygon-1.0.2.jar')
     annotationProcessor 'com.tickaroo.tikxml:processor:0.8.13'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
 }
