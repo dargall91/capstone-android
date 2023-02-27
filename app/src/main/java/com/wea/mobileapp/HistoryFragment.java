@@ -49,7 +49,7 @@ public class HistoryFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
+        System.out.println("Testing");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history_fragment);
 

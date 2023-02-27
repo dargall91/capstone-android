@@ -27,6 +27,7 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.alert_rv_item, parent, false);
+        System.out.println("Inside Adapter Class");
         return new ViewHolder(view);
     }
 
