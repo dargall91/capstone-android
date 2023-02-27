@@ -20,7 +20,6 @@ public class ViewAlerts extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("Inside View Alerts Class");
         CMACMessageModel CMACMes1 = new CMACMessageModel();
         CMACMessageModel CMACMes2 = new CMACMessageModel();
 

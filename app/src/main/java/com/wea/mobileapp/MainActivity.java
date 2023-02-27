@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                         cmacMessage[0] = CMACProcessor.parseMessage();
                         dbHandler.getWritableDatabase();
                         dbHandler.addNewCMACAlert(cmacMessage[0].getMessageNumber());
-                        HistoryFragment.setText(dbHandler.readCMACS());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
