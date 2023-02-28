@@ -42,7 +42,5 @@ public class ViewAlerts extends AppCompatActivity {
         alertsRV.setLayoutManager(linearLayoutManager);
 
         alertsRV.setAdapter(cmacrvAdapter);
-
-
     }
 }

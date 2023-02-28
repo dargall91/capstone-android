@@ -19,8 +19,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = HomeFragmentBinding.inflate(inflater, container, false);
 
-
-
         return binding.getRoot();
     }
 
