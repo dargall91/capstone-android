@@ -54,16 +54,16 @@ public class DBHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
     }
 
-    public ArrayList<CMACMessageModel> readCMACS() {
+    public ArrayList<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_MESSAGE_TABLE_NAME, null);
 
-        ArrayList<CMACMessageModel> cmacModalArrayList = new ArrayList<>();
+        ArrayList<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)));
+                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)).getMessageNumber());
             } while (cursorCMAC.moveToNext());
         }
 
