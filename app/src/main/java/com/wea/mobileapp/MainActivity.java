@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ArrayList messageArr = new ArrayList();
     private DBHandler dbHandler = new DBHandler(getBaseContext());
-    private CMACRVAdapter adapter;
-    private ViewAlerts history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
                         cmacMessage[0] = CMACProcessor.parseMessage();
                         dbHandler.getWritableDatabase();
                         dbHandler.addNewCMACAlert(cmacMessage[0].getMessageNumber());
-                        HistoryFragment.setText(dbHandler.readCMACS());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
