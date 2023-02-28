@@ -42,12 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ArrayList messageArr = new ArrayList();
     private DBHandler dbHandler = new DBHandler(getBaseContext());
-    private CMACRVAdapter adapter;
-    private ViewAlerts history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("System Start");
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -63,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
         LocationUtils.init(getApplicationContext(), this);
 
         binding.getMessageButton.setOnClickListener(getMessage());
-
-//        history.onCreate(savedInstanceState);
     }
 
     @Override
