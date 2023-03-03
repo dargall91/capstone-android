@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TableRow;
 
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -108,7 +108,14 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
-            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, "getMessage");
+            String endpoint = "getMessage";
+
+            List<String> receivedMessages = dbHandler.readCMACS();
+            if (receivedMessages != null && !receivedMessages.isEmpty()) {
+                endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
+            }
+
+            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, endpoint);
 
             //if no message is received
             if (message == null) {
