@@ -129,9 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
             CollectedDeviceData deviceData = new CollectedDeviceData(message, LocationUtils.isGPSEnabled(), isInsideArea(message));
 
-            dbHandler.getWritableDatabase();
-            dbHandler.addNewCMACAlert(message.getMessageNumber());
-
             Random rand = new Random();
             int randomSleep = rand.nextInt(100) + 1;
 
@@ -194,8 +191,9 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     vibrator.cancel();
                     mediaPlayer.stop();
-                    //Handle device data upload on close
+
                     String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
+                    dbHandler.addNewRecord(deviceData, locationUri);
 
                     if (locationUri != null) {
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
