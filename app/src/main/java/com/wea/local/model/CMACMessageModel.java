@@ -28,48 +28,8 @@ public class CMACMessageModel {
         this.messageNumber = messageNumber;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public void setSentDateTime(String sentDateTime) {
-        this.sentDateTime = sentDateTime;
-    }
-
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
-    public void setCapIdentifier(String capIdentifier) {
-        this.capIdentifier = capIdentifier;
-    }
-
-    public void setAlertInfo(CMACMessageAlertInfo alertInfo) {
-        this.alertInfo = alertInfo;
-    }
-
     public String getMessageNumber() {
         return messageNumber;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public String getSentDateTime() {
-        return sentDateTime;
-    }
-
-    public String getMessageType() {
-        return messageType;
-    }
-
-    public String getCapIdentifier() {
-        return capIdentifier;
-    }
-
-    public CMACMessageAlertInfo getAlertInfo() {
-        return alertInfo;
     }
 
     /**
