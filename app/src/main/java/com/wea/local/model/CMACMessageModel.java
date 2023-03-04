@@ -24,12 +24,52 @@ public class CMACMessageModel {
     @Element(name = "CMAC_alert_info")
     private CMACMessageAlertInfo alertInfo;
 
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public void setSentDateTime(String sentDateTime) {
+        this.sentDateTime = sentDateTime;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public void setCapIdentifier(String capIdentifier) {
+        this.capIdentifier = capIdentifier;
+    }
+
+    public void setAlertInfo(CMACMessageAlertInfo alertInfo) {
+        this.alertInfo = alertInfo;
+    }
+
     public void setMessageNumber(String messageNumber) {
         this.messageNumber = messageNumber;
     }
 
     public String getMessageNumber() {
         return messageNumber;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getSentDateTime() {
+        return sentDateTime;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public String getCapIdentifier() {
+        return capIdentifier;
+    }
+
+    public CMACMessageAlertInfo getAlertInfo() {
+        return alertInfo;
     }
 
     /**
@@ -40,7 +80,7 @@ public class CMACMessageModel {
      * @param language The language to display
      * @return CMAC_short_text_alert_message in the chosen language
      */
-    public  String getShortMessage(String language) {
+    public String getShortMessage(String language) {
         return alertInfo.getShortMessage(language);
     }
 
@@ -52,14 +92,19 @@ public class CMACMessageModel {
      * @param language The language to display
      * @return CMAC_long_test_alert_message in the chosen language
      */
-    public  String getLongMessage(String language) {
+    public String getLongMessage(String language) {
         return alertInfo.getLongMessage(language);
     }
 
-    public CMACMessageModel() {};
+    public CMACMessageModel() {
+    }
+
+    ;
 
     public CMACMessageModel(String messageNumber) {
         this.messageNumber = messageNumber;
-    };
+    }
+
+    ;
 
 }
