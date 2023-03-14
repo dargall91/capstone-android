@@ -51,7 +51,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public ArrayList<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_MESSAGE_TABLE_NAME, null);
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
 
         ArrayList<String> cmacModalArrayList = new ArrayList<>();
 
