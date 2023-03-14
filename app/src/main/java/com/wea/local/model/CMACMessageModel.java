@@ -24,10 +24,6 @@ public class CMACMessageModel {
     @Element(name = "CMAC_alert_info")
     private CMACMessageAlertInfo alertInfo;
 
-    public void setMessageNumber(String messageNumber) {
-        this.messageNumber = messageNumber;
-    }
-
     public void setSender(String sender) {
         this.sender = sender;
     }
@@ -46,6 +42,10 @@ public class CMACMessageModel {
 
     public void setAlertInfo(CMACMessageAlertInfo alertInfo) {
         this.alertInfo = alertInfo;
+    }
+
+    public void setMessageNumber(String messageNumber) {
+        this.messageNumber = messageNumber;
     }
 
     public String getMessageNumber() {
@@ -80,7 +80,7 @@ public class CMACMessageModel {
      * @param language The language to display
      * @return CMAC_short_text_alert_message in the chosen language
      */
-    public  String getShortMessage(String language) {
+    public String getShortMessage(String language) {
         return alertInfo.getShortMessage(language);
     }
 
@@ -92,7 +92,19 @@ public class CMACMessageModel {
      * @param language The language to display
      * @return CMAC_long_test_alert_message in the chosen language
      */
-    public  String getLongMessage(String language) {
+    public String getLongMessage(String language) {
         return alertInfo.getLongMessage(language);
     }
+
+    public CMACMessageModel() {
+    }
+
+    ;
+
+    public CMACMessageModel(String messageNumber) {
+        this.messageNumber = messageNumber;
+    }
+
+    ;
+
 }

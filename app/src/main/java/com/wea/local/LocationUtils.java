@@ -27,10 +27,13 @@ import androidx.core.app.ActivityCompat;
 
 import com.snatik.polygon.Point;
 import com.snatik.polygon.Polygon;
+import com.wea.models.Coordinate;
 
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LocationUtils {
 
@@ -41,50 +44,51 @@ public class LocationUtils {
     /**
      * Initializes Location Request
      */
-    private static void init() {
+    public static void init(Context context, Activity activity) {
+        globalActivity = activity;
+        globalContext = context;
         globalLocationRequest = LocationRequest.create();
         globalLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         globalLocationRequest.setInterval(5000);
         globalLocationRequest.setFastestInterval(2000);
+        turnOnGPS();
     }
 
     /**
      * Method to get the GPS Location of the device.
      * CURRENTLY THE LOCATION IS PRINTED TO LOGCAT.
      */
-    public static void getGPSLocation(Context context, Activity activity) {
-        globalActivity = activity;
-        globalContext = context;
-        init();
+    public static Coordinate getGPSLocation() {
+        AtomicReference<Coordinate> coordinate = new AtomicReference<>();
+
+        boolean gpsServices = isGPSEnabled();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (isGPSEnabled()) {
+            if (ActivityCompat.checkSelfPermission(globalContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(@NonNull LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
 
-                    LocationServices.getFusedLocationProviderClient(activity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
-                        @Override
-                        public void onLocationResult(@NonNull LocationResult locationResult) {
-                            super.onLocationResult(locationResult);
-                            LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
+                        if (locationResult != null && locationResult.getLocations().size() > 0) {
+                            int index = locationResult.getLocations().size() - 1;
+                            double latitude = locationResult.getLocations().get(index).getLatitude();
+                            double longitude = locationResult.getLocations().get(index).getLongitude();
+                            coordinate.set(new Coordinate(latitude, longitude));
 
-                            if (locationResult != null && locationResult.getLocations().size() > 0) {
-                                int index = locationResult.getLocations().size() - 1;
-                                double latitude = locationResult.getLocations().get(index).getLatitude();
-                                double longitude = locationResult.getLocations().get(index).getLongitude();
-
-                                System.out.println("GETTING DEVICE LOCATION");
-                                System.out.println(latitude);
-                                System.out.println(longitude);
-                            }
-
+                            System.out.println("GETTING DEVICE LOCATION");
+                            System.out.println(latitude);
+                            System.out.println(longitude);
                         }
-                    }, Looper.getMainLooper());
-                } else {
-                    turnOnGPS();
-                }
+                    }
+                }, Looper.getMainLooper());
             } else {
-                activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
+
+        return coordinate.get();
     }
 
     /**
@@ -92,17 +96,10 @@ public class LocationUtils {
      *
      * @return A boolean for gps enabled
      */
-    private static boolean isGPSEnabled() {
-        LocationManager locationManager = null;
-        boolean isEnabled = false;
+    public static boolean isGPSEnabled() {
+        LocationManager locationManager = (LocationManager) globalContext.getSystemService(Context.LOCATION_SERVICE);
 
-        if (locationManager == null) {
-            locationManager = (LocationManager) globalContext.getSystemService(Context.LOCATION_SERVICE);
-        }
-
-        isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        return isEnabled;
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     /**
@@ -118,31 +115,28 @@ public class LocationUtils {
         Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(globalContext.getApplicationContext())
                 .checkLocationSettings(builder.build());
 
-        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+        result.addOnCompleteListener(task -> {
 
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(globalContext, "GPS is already tured on", Toast.LENGTH_SHORT).show();
+            try {
+                LocationSettingsResponse response = task.getResult(ApiException.class);
+                Toast.makeText(globalContext, "GPS is already tured on", Toast.LENGTH_SHORT).show();
 
-                } catch (ApiException e) {
+            } catch (ApiException e) {
 
-                    switch (e.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                switch (e.getStatusCode()) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
 
-                            try {
-                                ResolvableApiException resolvableApiException = (ResolvableApiException) e;
-                                resolvableApiException.startResolutionForResult(globalActivity, 2);
-                            } catch (IntentSender.SendIntentException ex) {
-                                ex.printStackTrace();
-                            }
-                            break;
+                        try {
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) e;
+                            resolvableApiException.startResolutionForResult(globalActivity, 2);
+                        } catch (IntentSender.SendIntentException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
 
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            //Device does not have location
-                            break;
-                    }
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        //Device does not have location
+                        break;
                 }
             }
         });
