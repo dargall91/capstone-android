@@ -65,29 +65,24 @@ public class LocationUtils {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(globalContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (gpsServices) {
-                    LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
-                        @Override
-                        public void onLocationResult(@NonNull LocationResult locationResult) {
-                            super.onLocationResult(locationResult);
-                            LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
+                LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(@NonNull LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
 
-                            if (locationResult != null && locationResult.getLocations().size() > 0) {
-                                int index = locationResult.getLocations().size() - 1;
-                                double latitude = locationResult.getLocations().get(index).getLatitude();
-                                double longitude = locationResult.getLocations().get(index).getLongitude();
-                                coordinate.set(new Coordinate(latitude, longitude));
+                        if (locationResult != null && locationResult.getLocations().size() > 0) {
+                            int index = locationResult.getLocations().size() - 1;
+                            double latitude = locationResult.getLocations().get(index).getLatitude();
+                            double longitude = locationResult.getLocations().get(index).getLongitude();
+                            coordinate.set(new Coordinate(latitude, longitude));
 
-                                System.out.println("GETTING DEVICE LOCATION");
-                                System.out.println(latitude);
-                                System.out.println(longitude);
-                            }
+                            System.out.println("GETTING DEVICE LOCATION");
+                            System.out.println(latitude);
+                            System.out.println(longitude);
                         }
-                    }, Looper.getMainLooper());
-                } else {
-                    turnOnGPS();
-                    gpsServices = isGPSEnabled();
-                }
+                    }
+                }, Looper.getMainLooper());
             } else {
                 globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
@@ -102,16 +97,9 @@ public class LocationUtils {
      * @return A boolean for gps enabled
      */
     public static boolean isGPSEnabled() {
-        LocationManager locationManager = null;
-        boolean isEnabled = false;
+        LocationManager locationManager = (LocationManager) globalContext.getSystemService(Context.LOCATION_SERVICE);
 
-        if (locationManager == null) {
-            locationManager = (LocationManager) globalContext.getSystemService(Context.LOCATION_SERVICE);
-        }
-
-        isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        return isEnabled;
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     /**

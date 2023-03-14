@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CollectedDeviceData;
 
 import java.util.ArrayList;
 
@@ -16,11 +17,8 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String CMAC_MESSAGE_TABLE_NAME = "cmac_message";
     private static final String CMAC_ALERT_TABLE_NAME = "cmac_alert";
     private static final String CMAC_MESSAGE_NO_COL = "messageNumber";
-    private static final String CMAC_SENDER_NO_COL = "sender";
-    private static final String CMAC_DATETIME_NO_COL = "sentDateTime";
-    private static final String CMAC_MESSAGE_TYPE_NO_COL = "messageType";
-    private static final String CMAC_CAP_ID_NO_COL = "capIdentifier";
-    private static final String DEVICE_LOCATION_COL = "DeviceLocation";
+    private static final String CMAC_URI_NO_COL = "uri";
+    private static final String CMAC_DATETIME_NO_COL = "timeReceived";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -29,14 +27,15 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public void addNewCMACAlert(String cmacMessageNo) {
+    public void addNewRecord(CollectedDeviceData collectedDeviceData, String uri) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(CMAC_MESSAGE_NO_COL, cmacMessageNo);
+        values.put(CMAC_MESSAGE_NO_COL, Integer.toString(collectedDeviceData.getMessageNumber(), 16));
+        values.put(CMAC_URI_NO_COL, uri);
+        values.put(CMAC_DATETIME_NO_COL, collectedDeviceData.getTimeReceived());
 
         db.insert(CMAC_ALERT_TABLE_NAME, null, values);
-
         db.close();
     }
 
@@ -49,21 +48,16 @@ public class DBHandler extends SQLiteOpenHelper {
         db.delete(db.toString(), query, args);
     }
 
-    public void insertNewDeviceLocation(String cmacMessageNo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-    }
-
-    public ArrayList<CMACMessageModel> readCMACS() {
+    public ArrayList<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_MESSAGE_TABLE_NAME, null);
 
-        ArrayList<CMACMessageModel> cmacModalArrayList = new ArrayList<>();
+        ArrayList<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)));
+                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)).getMessageNumber());
             } while (cursorCMAC.moveToNext());
         }
 

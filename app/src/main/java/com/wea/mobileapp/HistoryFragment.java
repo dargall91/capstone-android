@@ -7,97 +7,48 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wea.local.DBHandler;
+import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CMACMessage;
 import com.wea.mobileapp.databinding.HistoryFragmentBinding;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 public class HistoryFragment extends Fragment {
-
     private HistoryFragmentBinding binding;
     private static TextView tv;
-    private static ArrayList  history = new ArrayList<>();
+    private static List<String> history;
     private DBHandler dbHandler;
+    LayoutInflater inflater;
+    private View view;
+    private List<CMACMessageModel> alertModalArrayList;
 
-/*    @Override
+    @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
+        this.inflater = inflater;
+        view = inflater.inflate(R.layout.history_fragment, container, false);
+        history = new ArrayList<>();
         binding = HistoryFragmentBinding.inflate(inflater, container, false);
+
+        alertModalArrayList = new ArrayList<>();
+
         return binding.getRoot();
-
-    }*/
-
-//    @Override
-////    public void onCreate(@Nullable Bundle savedInstanceState){
-////        super.onCreate(savedInstanceState);
-////        if (savedInstanceState != null){
-////            tv.setText(savedInstanceState.getCharSequence("ourKey"));
-////        }
-////    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.history_fragment);
-
-        dbHandler = new DBHandler(this.getActivity());
-
-        if (savedInstanceState != null){
-            history = savedInstanceState.getCharSequenceArrayList("historyMessages");
-            System.out.println(history.get(0));
-        }
-
     }
 
-    private void setContentView(int history_fragment) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        recyclerView.setAdapter(new CMACRVAdapter(alertModalArrayList, view.getContext().getApplicationContext()));
     }
-
-/*    public void onStart(){
-        super.onStart();
-        tv = (TextView)getView().findViewById(R.id.textview_second);
-    }*/
-
- /*   @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        System.out.println("INSIDE ONSAVEINSTANCE");
-        outState.putStringArrayList("historyMessages", history);
-        System.out.println(outState);
-    }
-*/
-/*
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-*/
-    public static void setText(ArrayList messages) {
-        String text = "";
-        history = messages;
-
-        for (int i = 0; i <= messages.size() - 1; i++){
-            text += messages.get(i).toString();
-            text += "\n\n";
-        }
-
-        if (tv != null){
-            System.out.println("TV Not Null");
-            tv.setText(text);
-        }
-    }
-
 }

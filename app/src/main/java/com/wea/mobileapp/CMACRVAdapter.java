@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wea.local.model.CMACMessageModel;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder> {
 
-    private ArrayList<CMACMessageModel> cmacMessageModelArrayList;
+    private List<CMACMessageModel> cmacMessageModelArrayList;
     private Context context;
 
-    public CMACRVAdapter(ArrayList<CMACMessageModel> cmacMessageModelArrayList, Context context) {
+    public CMACRVAdapter(List<CMACMessageModel> cmacMessageModelArrayList, Context context) {
         this.cmacMessageModelArrayList = cmacMessageModelArrayList;
         this.context = context;
     }

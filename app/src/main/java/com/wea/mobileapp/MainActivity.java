@@ -21,7 +21,6 @@ import com.wea.interfaces.WeaApiInterface;
 import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
 import com.wea.local.model.CMACMessageModel;
-import com.wea.local.model.CollectedUserData;
 import com.wea.mobileapp.databinding.ActivityMainBinding;
 import com.wea.local.DBHandler;
 import com.wea.models.CMACMessage;
@@ -32,20 +31,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TableRow;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
-
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-    private ArrayList messageArr = new ArrayList();
-    private DBHandler dbHandler = new DBHandler(getBaseContext());
+    private DBHandler dbHandler;
+    private CMACRVAdapter adapter;
+    private ViewAlerts history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -56,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        dbHandler = new DBHandler(getBaseContext());
 
         WeaApiInterface.setServerIp(getApplicationContext());
         LocationUtils.init(getApplicationContext(), this);
@@ -109,7 +108,14 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(view, "Retrieving message from server...", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
-            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, "getMessage");
+            String endpoint = "getMessage";
+
+            List<String> receivedMessages = dbHandler.readCMACS();
+            if (receivedMessages != null && !receivedMessages.isEmpty()) {
+                endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
+            }
+
+            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, endpoint);
 
             //if no message is received
             if (message == null) {
@@ -122,10 +128,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             CollectedDeviceData deviceData = new CollectedDeviceData(message, LocationUtils.isGPSEnabled(), isInsideArea(message));
-
-//            dbHandler.getWritableDatabase();
-//            dbHandler.addNewCMACAlert(message.getMessageNumber());
-//            HistoryFragment.setText(dbHandler.readCMACS());
 
             Random rand = new Random();
             int randomSleep = rand.nextInt(100) + 1;
@@ -189,8 +191,9 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     vibrator.cancel();
                     mediaPlayer.stop();
-                    //Handle device data upload on close
+
                     String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
+                    dbHandler.addNewRecord(deviceData, locationUri);
 
                     if (locationUri != null) {
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
@@ -220,12 +223,13 @@ public class MainActivity extends AppCompatActivity {
         if (polygon == null) {
             return false;
         }
+
         Coordinate currentLocation = LocationUtils.getGPSLocation();
         if (currentLocation == null) {
             return false;
         }
+
         Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
-//        Double[] currentCoordinates = { 100.0, 100.0 };
         return LocationUtils.isInsideArea(polygon, currentCoordinates);
     }
 }
