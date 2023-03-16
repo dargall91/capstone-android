@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         dbHandler = new DBHandler(getBaseContext());
+        dbHandler.onUpgrade(dbHandler.getReadableDatabase(), 0, 0);
 
         WeaApiInterface.setServerIp(getApplicationContext());
         LocationUtils.init(getApplicationContext(), this);
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
             String endpoint = "getMessage";
 
             List<String> receivedMessages = dbHandler.readCMACS();
-            if (receivedMessages != null && !receivedMessages.isEmpty()) {
+            //if no entries are found in the db, the list will contain a single null element
+            if (receivedMessages.get(0) != null) {
                 endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
             }
 

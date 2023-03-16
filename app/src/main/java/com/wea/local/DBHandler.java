@@ -59,7 +59,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)).getMessageNumber());
+                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(0)).getMessageNumber());
             } while (cursorCMAC.moveToNext());
         }
 
@@ -73,7 +73,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + CMAC_MESSAGE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CMAC_ALERT_TABLE_NAME);
         onCreate(db);
     }
 
