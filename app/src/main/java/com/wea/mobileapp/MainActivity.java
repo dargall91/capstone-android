@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         dbHandler = new DBHandler(getBaseContext());
-        dbHandler.onUpgrade(dbHandler.getReadableDatabase(), 0, 0);
+        dbHandler.onUpgrade(dbHandler.getReadableDatabase(), 0, 1);
 
         WeaApiInterface.setServerIp(getApplicationContext());
         LocationUtils.init(getApplicationContext(), this);
