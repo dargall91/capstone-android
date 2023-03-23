@@ -20,20 +20,12 @@ public class ViewAlerts extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CMACMessageModel CMACMes1 = new CMACMessageModel();
-        CMACMessageModel CMACMes2 = new CMACMessageModel();
-
-        CMACMes1.setMessageNumber("12345");
-        CMACMes2.setMessageNumber("34546");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_alerts);
 
         alertModalArrayList = new ArrayList<>();
-        //dbHandler = new DBHandler(ViewAlerts.this);
-
-        alertModalArrayList.add(CMACMes1);
-        alertModalArrayList.add(CMACMes2);
+        dbHandler = new DBHandler(ViewAlerts.this);
 
         cmacrvAdapter = new CMACRVAdapter(alertModalArrayList, ViewAlerts.this);
         alertsRV = findViewById(R.id.idRVAlerts);
