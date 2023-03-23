@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         final AlertDialog weaAlertDialog = weaAlertBuilder.create();
         weaAlertDialog.setOnShowListener(dialogInterface -> {
             //set message is inside area
-            deviceData.setDisplayedInside(isInsideArea(message));
+            deviceData.setMessagePresented(true);
             //set vibration and sound effects
             long[] vibrationPatter = {200, 1900, 150};
             vibrator.vibrate(VibrationEffect.createWaveform(vibrationPatter, 0));

@@ -6,10 +6,10 @@ public class CollectedDeviceData {
     private String timeReceived;
     private String timeDisplayed;
     private boolean receivedInside;
-    private boolean displayedInside;
     private boolean messagePresented;
     private boolean locationAvailable;
     private float distanceFromPolygon;
+    private boolean optedOut;
 
     public CollectedDeviceData(CMACMessage message, boolean locationAvailable, boolean receivedInside) {
         messageNumber = Integer.parseInt(message.getMessageNumber(), 16);
@@ -58,14 +58,6 @@ public class CollectedDeviceData {
         this.receivedInside = receivedInside;
     }
 
-    public boolean isDisplayedInside() {
-        return displayedInside;
-    }
-
-    public void setDisplayedInside(boolean displayedInside) {
-        this.displayedInside = displayedInside;
-    }
-
     public boolean isMessagePresented() {
         return messagePresented;
     }
@@ -88,5 +80,13 @@ public class CollectedDeviceData {
 
     public void setDistanceFromPolygon(float distanceFromPolygon) {
         this.distanceFromPolygon = distanceFromPolygon;
+    }
+
+    public boolean isOptedOut() {
+        return optedOut;
+    }
+
+    public void setOptedOut(boolean optedOut) {
+        this.optedOut = optedOut;
     }
 }
