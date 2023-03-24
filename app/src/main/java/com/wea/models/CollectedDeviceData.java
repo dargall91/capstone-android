@@ -1,5 +1,8 @@
 package com.wea.models;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 public class CollectedDeviceData {
     private int messageNumber;
     private String capIdentifier;
@@ -8,14 +11,17 @@ public class CollectedDeviceData {
     private boolean receivedInside;
     private boolean messagePresented;
     private boolean locationAvailable;
-    private float distanceFromPolygon;
+    private double distanceFromPolygon;
     private boolean optedOut;
 
     public CollectedDeviceData(CMACMessage message, boolean locationAvailable, boolean receivedInside) {
         messageNumber = Integer.parseInt(message.getMessageNumber(), 16);
-        capIdentifier = message.getCapIdentifier();;
+        capIdentifier = message.getCapIdentifier();
+        timeReceived = OffsetDateTime.now(ZoneOffset.UTC).withNano(0).toString();
         this.locationAvailable = locationAvailable;
         this.receivedInside = receivedInside;
+        distanceFromPolygon = 0.0;
+        optedOut = false;
     }
 
     public int getMessageNumber() {
@@ -74,11 +80,11 @@ public class CollectedDeviceData {
         this.locationAvailable = locationAvailable;
     }
 
-    public float getDistanceFromPolygon() {
+    public double getDistanceFromPolygon() {
         return distanceFromPolygon;
     }
 
-    public void setDistanceFromPolygon(float distanceFromPolygon) {
+    public void setDistanceFromPolygon(double distanceFromPolygon) {
         this.distanceFromPolygon = distanceFromPolygon;
     }
 
