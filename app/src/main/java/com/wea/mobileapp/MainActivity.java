@@ -31,6 +31,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TableRow;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Random;
 
@@ -38,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private DBHandler dbHandler;
-    private CMACRVAdapter adapter;
-    private ViewAlerts history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +129,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
 
-            CollectedDeviceData deviceData = new CollectedDeviceData(message, LocationUtils.isGPSEnabled(), isInsideArea(message));
+            CollectedDeviceData deviceData = new CollectedDeviceData(message, LocationUtils.isGPSEnabled(),
+                    LocationUtils.isInsideArea(message));
+
+            if (!deviceData.isReceivedInside()) {
+                String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
+                Coordinate userLocation = LocationUtils.getGPSLocation();
+                double distanceFromPolygon = DistanceOutsidePolygon.distanceFromPolygon(userLocation, polygon);
+                deviceData.setDistanceFromPolygon(distanceFromPolygon);
+            }
+
+            deviceData.setOptedOut(userOptedOut(message));
 
             Random rand = new Random();
             int randomSleep = rand.nextInt(100) + 1;
@@ -142,35 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             getWeaAlertDialog(message, deviceData, view).show();
-
-            boolean locationServicesOn = LocationUtils.isGPSEnabled();
-
-            System.out.println("PRINTING LOCATION SERVICES");
-            System.out.println(locationServicesOn);
-
-            String coords = "40.842226,14.211753 40.829498,14.229262, 40.833394,14.26617 40.84768,14.278701 40.858716,14.27715";
-            Double[] myPoint = {40.8518, 14.2681};
-
-            Double[] info = DistanceOutsidePolygon.closestPointOnPolygon(myPoint, coords);
-            System.out.println("CHECKING DISTANCE FROM POLYGON");
-            System.out.println(info[0] + " " + info[1] +  " " + info[2]);
-
-            boolean inside = LocationUtils.isInsideArea(coords, myPoint);
-            System.out.println("CHECKING INSIDE POLYGON");
-            System.out.println(inside);
         };
-    }
-
-    private void loadCMAC() {
-        CMACMessageModel[] cmacMessage;
-        dbHandler.getReadableDatabase();
-        cmacMessage = dbHandler.readCMACS().toArray(new CMACMessageModel[0]);
-        int rows = cmacMessage.length;
-
-        for(int i = 0; i < rows; i++){
-            final TableRow row = new TableRow(this);
-            row.setId(i);
-        }
     }
 
     /**
@@ -209,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
         final AlertDialog weaAlertDialog = weaAlertBuilder.create();
         weaAlertDialog.setOnShowListener(dialogInterface -> {
             //set message is inside area
-            deviceData.setDisplayedInside(isInsideArea(message));
+            deviceData.setMessagePresented(true);
+            deviceData.setTimeDisplayed(OffsetDateTime.now(ZoneOffset.UTC).withNano(0).toString());
             //set vibration and sound effects
             long[] vibrationPatter = {200, 1900, 150};
             vibrator.vibrate(VibrationEffect.createWaveform(vibrationPatter, 0));
@@ -220,18 +203,15 @@ public class MainActivity extends AppCompatActivity {
         return weaAlertDialog;
     }
 
-    private boolean isInsideArea(CMACMessage message) {
-        String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
-        if (polygon == null) {
-            return false;
+    /**
+     * Since we don't have any settings programme to determine this, just opt out 10% of the time or if message is test
+     * @return true if opted out, otherwise false
+     */
+    private boolean userOptedOut(CMACMessage message) {
+        if (message.getMessageType().equalsIgnoreCase("test")) {
+            return true;
         }
 
-        Coordinate currentLocation = LocationUtils.getGPSLocation();
-        if (currentLocation == null) {
-            return false;
-        }
-
-        Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
-        return LocationUtils.isInsideArea(polygon, currentCoordinates);
+        return Math.random() <= 0.1;
     }
 }

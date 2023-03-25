@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.snatik.polygon.Point;
 import com.snatik.polygon.Polygon;
+import com.wea.models.CMACMessage;
 import com.wea.models.Coordinate;
 
 import android.widget.Toast;
@@ -171,5 +172,20 @@ public class LocationUtils {
         Point point = new Point(myPoint[0], myPoint[1]);
 
         return poly.contains(point);
+    }
+
+    public static boolean isInsideArea(CMACMessage message) {
+        String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
+        if (polygon == null || polygon.isEmpty()) {
+            return false;
+        }
+
+        Coordinate currentLocation = LocationUtils.getGPSLocation();
+        if (currentLocation == null) {
+            return false;
+        }
+
+        Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
+        return LocationUtils.isInsideArea(polygon, currentCoordinates);
     }
 }
