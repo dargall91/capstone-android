@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cmac_device_local";
     private static final int DB_VERSION = 1;
-    private static final String CMAC_MESSAGE_TABLE_NAME = "cmac_message";
     private static final String CMAC_ALERT_TABLE_NAME = "cmac_alert";
     private static final String CMAC_MESSAGE_NO_COL = "messageNumber";
     private static final String CMAC_URI_NO_COL = "uri";

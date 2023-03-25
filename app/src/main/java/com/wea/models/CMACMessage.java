@@ -31,6 +31,8 @@ public class CMACMessage {
         return messageType;
     }
 
+    public void setMessageType(String messageType) {this.messageType = messageType;}
+
     public void setSentDateTime(String sentDateTime) {
         this.sentDateTime = sentDateTime;
     }
