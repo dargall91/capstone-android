@@ -23,7 +23,9 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + CMAC_ALERT_TABLE_NAME + " ("
-                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL)";
+                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL, "
+                + CMAC_URI_NO_COL + " TEXT,"
+                + CMAC_DATETIME_NO_COL + " TEXT)";
         db.execSQL(query);
     }
 
@@ -51,13 +53,13 @@ public class DBHandler extends SQLiteOpenHelper {
     public ArrayList<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_MESSAGE_TABLE_NAME, null);
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
 
         ArrayList<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)).getMessageNumber());
+                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(0)).getMessageNumber());
             } while (cursorCMAC.moveToNext());
         }
 
@@ -71,7 +73,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + CMAC_MESSAGE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CMAC_ALERT_TABLE_NAME);
         onCreate(db);
     }
 
