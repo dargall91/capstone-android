@@ -6,6 +6,8 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.wea.local.DBHandler;
+import com.wea.models.CMACMessage;
+import com.wea.models.CollectedDeviceData;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,5 +34,10 @@ public class SimpleEntityReadWriteTest {
 
     @Test
     public void writeAlertAndRead() throws Exception {
+        CMACMessage cmac = new CMACMessage();
+        cmac.setMessageNumber("123");
+        CollectedDeviceData data = new CollectedDeviceData(cmac, false, false);
+        dbHandler.addNewRecord(data, "test");
+        assert dbHandler.readCMACS().get(0).equals("123");
     }
 }
