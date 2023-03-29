@@ -34,6 +34,10 @@ public class DistanceOutsidePolygon {
     }
 
     public static double distanceFromPolygon(Coordinate point, String polygonString) {
+        if (polygonString == null || polygonString.isEmpty()) {
+            return 0.0;
+        }
+
         List<Coordinate> polygon = new ArrayList<>();
         List<String> splitPolygonString = List.of(polygonString.split(" "));
 

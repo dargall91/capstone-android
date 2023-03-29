@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
             List<String> receivedMessages = dbHandler.readCMACS();
             //if no entries are found in the db, the list will contain a single null element
-            if (receivedMessages.get(0) != null) {
+            if (receivedMessages != null && receivedMessages.get(0) != null) {
                 endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
             }
 
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
      * @return true if opted out, otherwise false
      */
     private boolean userOptedOut(CMACMessage message) {
-        if (message.getMessageType().equalsIgnoreCase("test")) {
+        if (message.getMessageType() == null || message.getMessageType().equalsIgnoreCase("test")) {
             return true;
         }
 
