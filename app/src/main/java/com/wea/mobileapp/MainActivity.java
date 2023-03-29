@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
             String endpoint = "getMessage";
 
             List<String> receivedMessages = dbHandler.readCMACS();
-            //if no entries are found in the db, the list will contain a single null element
-            if (receivedMessages != null && receivedMessages.get(0) != null) {
+            //if no entries are found in the db, the list will be size 0
+            if (receivedMessages != null && receivedMessages.size() == 0) {
                 endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
             }
 
