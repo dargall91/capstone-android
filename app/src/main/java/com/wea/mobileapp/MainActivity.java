@@ -176,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
                     mediaPlayer.stop();
 
                     String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
-                    dbHandler.addNewRecord(deviceData, locationUri);
 
                     if (locationUri != null) {
+                        dbHandler.addNewRecord(deviceData, locationUri.replace("http://localhost:8080/wea/api/", ""));
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     } else {

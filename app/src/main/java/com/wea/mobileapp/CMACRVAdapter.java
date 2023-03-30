@@ -39,17 +39,14 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
         savedData = dbHandler.getAllRows();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.alert_rv_item, parent, false);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LinearLayout something = (LinearLayout) ((ViewGroup) view).getChildAt(0);
-                TextView abc = (TextView) something.getChildAt(2);
-                CollectedDeviceData collectedDeviceData = WeaApiInterface.getSingleResult(CollectedDeviceData.class,
-                        (String) abc.getText());
+        view.setOnClickListener(view1 -> {
+            LinearLayout cardLayout = (LinearLayout) ((ViewGroup) view1).getChildAt(0);
+            TextView uri = (TextView) cardLayout.getChildAt(2);
+            CollectedDeviceData collectedDeviceData = WeaApiInterface.getSingleResult(CollectedDeviceData.class,
+                    (String) uri.getText());
 
-                final AlertDialog.Builder dataDialog = new AlertDialog.Builder(context);
+            final AlertDialog.Builder dataDialog = new AlertDialog.Builder(context);
 
-            }
         });
 
         return new ViewHolder(view);
