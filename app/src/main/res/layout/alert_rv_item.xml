@@ -30,6 +30,15 @@
             android:padding="3dp"
             android:text="@string/date"
             android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/uri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:text="@string/date"
+            android:textColor="@color/black"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

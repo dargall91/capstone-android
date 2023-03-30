@@ -1,18 +1,24 @@
 package com.wea.mobileapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wea.interfaces.WeaApiInterface;
 import com.wea.local.DBHandler;
 import com.wea.local.SavedDataModel;
 import com.wea.models.CMACMessage;
+import com.wea.models.CollectedDeviceData;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -35,8 +41,14 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {;
-                System.out.println("test");
+            public void onClick(View view) {
+                LinearLayout something = (LinearLayout) ((ViewGroup) view).getChildAt(0);
+                TextView abc = (TextView) something.getChildAt(2);
+                CollectedDeviceData collectedDeviceData = WeaApiInterface.getSingleResult(CollectedDeviceData.class,
+                        (String) abc.getText());
+
+                final AlertDialog.Builder dataDialog = new AlertDialog.Builder(context);
+
             }
         });
 
@@ -48,6 +60,7 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
         SavedDataModel model = savedData.get(position);
         holder.cmacAlertID.setText("Message Number: " + model.getMessageNumber());
         holder.date.setText("Time Received: " + model.getDateTime());
+        holder.uri.setText("Time Received: " + model.getUri());
     }
 
     @Override
@@ -58,11 +71,13 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView cmacAlertID;
         private TextView date;
+        private TextView uri;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cmacAlertID = itemView.findViewById(R.id.idCMACAlertID);
             date = itemView.findViewById(R.id.date);
+            uri = itemView.findViewById(R.id.uri);
         }
     }
 }
