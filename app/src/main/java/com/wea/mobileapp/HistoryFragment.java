@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wea.local.DBHandler;
-import com.wea.local.model.CMACMessageModel;
 import com.wea.models.CMACMessage;
 import com.wea.mobileapp.databinding.HistoryFragmentBinding;
 
@@ -26,7 +25,7 @@ public class HistoryFragment extends Fragment {
     private DBHandler dbHandler;
     LayoutInflater inflater;
     private View view;
-    private List<CMACMessageModel> alertModalArrayList;
+    private List<CMACMessage> alertModalArrayList;
 
     @Override
     public View onCreateView(
@@ -37,6 +36,7 @@ public class HistoryFragment extends Fragment {
         view = inflater.inflate(R.layout.history_fragment, container, false);
         history = new ArrayList<>();
         binding = HistoryFragmentBinding.inflate(inflater, container, false);
+        dbHandler = new DBHandler(this.getContext());
 
         alertModalArrayList = new ArrayList<>();
 
@@ -49,6 +49,6 @@ public class HistoryFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        recyclerView.setAdapter(new CMACRVAdapter(alertModalArrayList, view.getContext().getApplicationContext()));
+        recyclerView.setAdapter(new CMACRVAdapter(dbHandler, view.getContext().getApplicationContext()));
     }
 }

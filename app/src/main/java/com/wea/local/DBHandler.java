@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CMACMessage;
 import com.wea.models.CollectedDeviceData;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cmac_device_local";
@@ -49,21 +50,42 @@ public class DBHandler extends SQLiteOpenHelper {
         db.delete(db.toString(), query, args);
     }
 
-    public ArrayList<String> readCMACS() {
+    public List<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
 
-        ArrayList<String> cmacModalArrayList = new ArrayList<>();
+        List<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(0)).getMessageNumber());
+                cmacModalArrayList.add(cursorCMAC.getString(0));
             } while (cursorCMAC.moveToNext());
         }
 
         cursorCMAC.close();
         return cmacModalArrayList;
+    }
+
+    public List<SavedDataModel> getAllRows() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
+
+        List<SavedDataModel> savedDataList = new ArrayList<>();
+
+        if (cursorCMAC.moveToFirst()) {
+            do {
+                SavedDataModel model = new SavedDataModel();
+                model.setMessageNumber(cursorCMAC.getString(0));
+                model.setUri(cursorCMAC.getString(1));
+                model.setDateTime(cursorCMAC.getString(2));
+                savedDataList.add(model);
+            } while (cursorCMAC.moveToNext());
+        }
+
+        cursorCMAC.close();
+        return savedDataList;
     }
 
     public DBHandler(Context context){

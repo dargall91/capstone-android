@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 
 import com.wea.local.DBHandler;
-import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CMACMessage;
 
 import java.util.ArrayList;
 
 public class ViewAlerts extends AppCompatActivity {
 
-    private ArrayList<CMACMessageModel> alertModalArrayList;
+    private ArrayList<CMACMessage> alertModalArrayList;
     private DBHandler dbHandler;
     private CMACRVAdapter cmacrvAdapter;
     private RecyclerView alertsRV;
@@ -27,7 +27,7 @@ public class ViewAlerts extends AppCompatActivity {
         alertModalArrayList = new ArrayList<>();
         dbHandler = new DBHandler(ViewAlerts.this);
 
-        cmacrvAdapter = new CMACRVAdapter(alertModalArrayList, ViewAlerts.this);
+        cmacrvAdapter = new CMACRVAdapter(dbHandler, ViewAlerts.this);
         alertsRV = findViewById(R.id.idRVAlerts);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ViewAlerts.this, RecyclerView.VERTICAL, false);
