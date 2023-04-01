@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:elevation="8dp"
+    android:clickable="true"
     app:cardCornerRadius="4dp">
 
     <LinearLayout
@@ -22,6 +23,22 @@
             android:text="@string/cmac_alert_id"
             android:textColor="@color/black" />
 
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:text=""
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/uri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
