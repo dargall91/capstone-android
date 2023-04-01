@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
             }
 
-            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, endpoint);
+            CMACMessage message = WeaApiInterface.getSingleXmlResult(CMACMessage.class, endpoint);
 
             //if no message is received
             if (message == null) {

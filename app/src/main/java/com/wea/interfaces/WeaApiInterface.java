@@ -5,11 +5,11 @@ import android.content.res.AssetManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tickaroo.tikxml.TikXml;
+import com.wea.models.CollectedDeviceData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import okhttp3.MediaType;
@@ -17,14 +17,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Sink;
 
 public class WeaApiInterface {
     private static final OkHttpClient client = new OkHttpClient();
-    private static TikXml parser = new TikXml.Builder().exceptionOnUnreadXml(false).build();
+    private static TikXml tikXml = new TikXml.Builder().exceptionOnUnreadXml(false).build();
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final String HTTP = "http://";
     private static final String PORT_PATH = ":8080/wea/api/";
@@ -66,7 +62,7 @@ public class WeaApiInterface {
      * @param <T>
      * @return
      */
-    public static <T> T getSingleResult(Class<T> classType, String endpoint) {
+    public static <T> T getSingleXmlResult(Class<T> classType, String endpoint) {
         AtomicReference<T> result = new AtomicReference<>();
 
         Thread thread = new Thread(() -> {
@@ -77,7 +73,45 @@ public class WeaApiInterface {
 
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
-                    result.set(parser.read(response.body().source(), classType));
+                    result.set(tikXml.read(response.body().source(), classType));
+                } else {
+                    result.set(null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return result.get();
+    }
+
+    /**
+     * executes a GET request that expects a single result
+     * @param classType
+     * @param endpoint
+     * @param <T>
+     * @return
+     */
+    public static <T> T getSingleJsonResult(Class<T> classType, String endpoint) {
+        AtomicReference<T> result = new AtomicReference<>();
+
+        Thread thread = new Thread(() -> {
+            try {
+                Request request = new Request.Builder()
+                        .url(HTTP + SERVER_IP + PORT_PATH + endpoint)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    result.set(mapper.readValue(response.body().string(), classType));
                 } else {
                     result.set(null);
                 }
