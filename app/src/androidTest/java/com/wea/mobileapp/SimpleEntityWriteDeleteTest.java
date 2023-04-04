@@ -28,13 +28,15 @@ public class SimpleEntityWriteDeleteTest {
 
     @After
     public void closeDb() throws IOException {
+        Context context = ApplicationProvider.getApplicationContext();
+        context.deleteDatabase(dbHandler.getDatabaseName());
         dbHandler.close();
     }
 
     @Test
     public void writeAlertDelete() throws Exception {
         CMACMessage cmac = new CMACMessage();
-        cmac.setMessageNumber("123");
+        cmac.setMessageNumber("222");
         CollectedDeviceData data = new CollectedDeviceData(cmac, false, false);
         dbHandler.addNewRecord(data, "test");
         dbHandler.removeCMACAlert("123");

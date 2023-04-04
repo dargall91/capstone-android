@@ -25,6 +25,8 @@ public class SimpleEntityMultipleRecords {
 
     @After
     public void closeDb() throws IOException {
+        Context context = ApplicationProvider.getApplicationContext();
+        context.deleteDatabase(dbHandler.getDatabaseName());
         dbHandler.close();
     }
 
@@ -32,8 +34,8 @@ public class SimpleEntityMultipleRecords {
     public void multipleDatabaseEntry() throws Exception {
         CMACMessage cmac = new CMACMessage();
         CMACMessage cmac_two = new CMACMessage();
-        cmac.setMessageNumber("123");
-        cmac_two.setMessageNumber("456");
+        cmac.setMessageNumber("777");
+        cmac_two.setMessageNumber("888");
         CollectedDeviceData data = new CollectedDeviceData(cmac, false, false);
         CollectedDeviceData data2 = new CollectedDeviceData(cmac_two, false, false);
         dbHandler.addNewRecord(data, "test");
