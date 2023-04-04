@@ -4,7 +4,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
+import com.wea.models.Coordinate;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -39,5 +41,18 @@ public class PolygonUnitTest {
         boolean expected = false;
 
         assertEquals(actual, expected);
+    }
+
+    @Test
+    public void distanceOutsideSmallPolygon() {
+
+        String polygon = "38.47,-120.14 38.34,-119.95 38.52,-119.74 38.62,-119.89 38.47,-120.14";
+        Coordinate myPoint = new Coordinate(38.45, -119.33);
+
+        double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
+
+        double expected = 0.0;
+
+        assertEquals(actual, expected, 0.0);
     }
 }
