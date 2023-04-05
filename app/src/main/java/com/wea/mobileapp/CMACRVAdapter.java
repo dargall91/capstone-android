@@ -80,8 +80,8 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SavedDataModel model = savedData.get(position);
-        holder.cmacAlertID.setText("Message Number: " + model.getMessageNumber());
-        holder.date.setText("Time Received: " + model.getDateTime());
+        holder.cmacAlertID.setText(String.format("Message Number: %s", model.getMessageNumber()));
+        holder.date.setText(String.format("Time Received: %s", model.getDateTime()));
         holder.uri.setText(model.getUri());
     }
 
