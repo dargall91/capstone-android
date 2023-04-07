@@ -55,4 +55,17 @@ public class PolygonUnitTest {
 
         assertEquals(actual, expected, 0.0);
     }
+
+    @Test
+    public void distanceOutsideLargePolygon() {
+
+        String polygon = "38.47,-120.14 39.34,-119.95 40.52,-119.74 41.62,-119.89 42.47,-120.14, 38.47,-120.14";
+        Coordinate myPoint = new Coordinate(38.45, -119.33);
+
+        double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
+
+        double expected = 0.0;
+
+        assertEquals(actual, expected, 0.0);
+    }
 }
