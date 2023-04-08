@@ -20,7 +20,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.wea.interfaces.WeaApiInterface;
 import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
-import com.wea.local.model.CMACMessageModel;
 import com.wea.mobileapp.databinding.ActivityMainBinding;
 import com.wea.local.DBHandler;
 import com.wea.models.CMACMessage;
@@ -29,7 +28,6 @@ import com.wea.models.Coordinate;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TableRow;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -112,12 +110,13 @@ public class MainActivity extends AppCompatActivity {
             String endpoint = "getMessage";
 
             List<String> receivedMessages = dbHandler.readCMACS();
+
             //if no entries are found in the db, the list will be size 0
-            if (receivedMessages != null && receivedMessages.size() == 0) {
+            if (receivedMessages != null && receivedMessages.size() != 0) {
                 endpoint += "?receivedMessages=" + String.join(",", receivedMessages);
             }
 
-            CMACMessage message = WeaApiInterface.getSingleResult(CMACMessage.class, endpoint);
+            CMACMessage message = WeaApiInterface.getSingleXmlResult(CMACMessage.class, endpoint);
 
             //if no message is received
             if (message == null) {
@@ -177,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
                     mediaPlayer.stop();
 
                     String locationUri = WeaApiInterface.postGetUri("upload", deviceData);
-                    dbHandler.addNewRecord(deviceData, locationUri);
 
                     if (locationUri != null) {
+                        dbHandler.addNewRecord(deviceData, locationUri.replace("http://localhost:8080/wea/api/", ""));
                         Snackbar.make(view, "Successfully uploaded user data", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     } else {

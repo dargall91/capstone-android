@@ -12,7 +12,7 @@ public class DistanceOutsidePolygon {
     }
 
     private static Coordinate vectorNegate(Coordinate vector) {
-        return new Coordinate(-vector.getLatitude(), -vector.getLongitude());
+        return new Coordinate(vector.getLatitude() * -1, vector.getLongitude() * -1);
     }
 
     private static Coordinate vectorAdd(Coordinate vector1, Coordinate vector2) {
@@ -30,7 +30,7 @@ public class DistanceOutsidePolygon {
     }
 
     private static Coordinate vectorNormalization(Coordinate vector) {
-        return new Coordinate(-vector.getLongitude(), vector.getLatitude());
+        return new Coordinate(vector.getLongitude() * -1, vector.getLatitude());
     }
 
     public static double distanceFromPolygon(Coordinate point, String polygonString) {
@@ -50,16 +50,12 @@ public class DistanceOutsidePolygon {
         double shortestDist = Double.MAX_VALUE;
         Coordinate closestPointOnPoly = polygon.get(0);
 
-        for (int i = 0; i < polygon.size(); i++) {
-            int prev = (i == 0 ? polygon.size() : i) - 1;
+        for (int i = 1; i < polygon.size(); i++) {
+            int prev = i - 1;
             Coordinate p1 = polygon.get(i);
             Coordinate p2 = polygon.get(prev);
             Coordinate line = vectorSubtract(p2, p1);
-
-            if (vectorLength(line) == 0) {
-                return 0.0;
-            }
-
+            
             Coordinate norm = vectorNormalization(line);
             double x1 = point.getLatitude();
             double x2 = norm.getLatitude();

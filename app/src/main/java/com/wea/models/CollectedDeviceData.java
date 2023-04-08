@@ -1,8 +1,11 @@
 package com.wea.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CollectedDeviceData {
     private int messageNumber;
     private String capIdentifier;
@@ -13,6 +16,8 @@ public class CollectedDeviceData {
     private boolean locationAvailable;
     private double distanceFromPolygon;
     private boolean optedOut;
+
+    public CollectedDeviceData() { }
 
     public CollectedDeviceData(CMACMessage message, boolean locationAvailable, boolean receivedInside) {
         messageNumber = Integer.parseInt(message.getMessageNumber(), 16);
