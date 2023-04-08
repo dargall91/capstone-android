@@ -44,10 +44,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public void removeCMACAlert(String cmacMessageNo) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "WHERE " + CMAC_MESSAGE_NO_COL + " = ";
-        String[] args = {cmacMessageNo};
-
-        db.delete(db.toString(), query, args);
+        db.delete(db.toString(), "messageNumber" + "=" + cmacMessageNo, null);
     }
 
     public List<String> readCMACS() {
