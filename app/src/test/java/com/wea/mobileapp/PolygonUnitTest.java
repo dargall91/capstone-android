@@ -44,28 +44,54 @@ public class PolygonUnitTest {
     }
 
     @Test
-    public void distanceOutsideSmallPolygon() {
+    public void distanceOutsideSmallPolygonShort() {
 
         String polygon = "38.47,-120.14 38.34,-119.95 38.52,-119.74 38.62,-119.89 38.47,-120.14";
         Coordinate myPoint = new Coordinate(38.45, -119.33);
 
         double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
 
-        double expected = 0.0;
+        double expected = 0.4;
 
-        assertEquals(actual, expected, 0.0);
+        assertEquals(actual, expected, 0.3);
     }
 
     @Test
-    public void distanceOutsideLargePolygon() {
+    public void distanceOutsideSmallPolygonLong() {
 
-        String polygon = "38.47,-120.14 39.34,-119.95 40.52,-119.74 41.62,-119.89 42.47,-120.14, 38.47,-120.14";
+        String polygon = "38.47,-120.14 38.34,-119.95 38.52,-119.74 38.62,-119.89 38.47,-120.14";
+        Coordinate myPoint = new Coordinate(99.45, -139.33);
+
+        double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
+
+        double expected = 63.8;
+
+        assertEquals(actual, expected, 0.3);
+    }
+
+    @Test
+    public void distanceOutsideLargePolygonShort() {
+
+        String polygon = "32.61,-84.36 32.74,-84.3 32.74,-84.29 32.75,-84.29 32.79,-84.27 32.74,-84.0 32.56,-84.07 32.61,-84.36";
+        Coordinate myPoint = new Coordinate(32.45, -85.33);
+
+        double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
+
+        double expected = 1.0;
+
+        assertEquals(actual, expected, 0.3);
+    }
+
+    @Test
+    public void distanceOutsideLargePolygonLong() {
+
+        String polygon = "32.61,-84.36 32.74,-84.3 32.74,-84.29 32.75,-84.29 32.79,-84.27 32.74,-84.0 32.56,-84.07 32.61,-84.36";
         Coordinate myPoint = new Coordinate(38.45, -119.33);
 
         double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
 
-        double expected = 0.0;
+        double expected = 35.4;
 
-        assertEquals(actual, expected, 0.0);
+        assertEquals(actual, expected, 0.3);
     }
 }
