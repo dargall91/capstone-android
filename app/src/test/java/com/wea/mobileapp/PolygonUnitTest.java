@@ -8,6 +8,9 @@ import com.wea.local.DistanceOutsidePolygon;
 import com.wea.local.LocationUtils;
 import com.wea.models.Coordinate;
 
+import java.time.Duration;
+import java.time.Instant;
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -93,5 +96,32 @@ public class PolygonUnitTest {
         double expected = 35.4;
 
         assertEquals(actual, expected, 0.3);
+    }
+
+    @Test
+    public void distanceOutsidePolygonBenchmark() {
+
+        double expected = 1.0;
+
+        String polygon = "37.74,-121.04 37.87,-121.04 37.95,-120.83 37.74,-120.81 37.49,-120.76 37.48,-120.79 37.47,-120.8 37.47,-120.81 37.47,-120.82 37.46,-120.82 37.46,-120.83 37.46,-120.84 37.45,-120.85 37.45,-120.87 37.44,-120.88 37.46,-121.02 37.74,-121.04";
+        Coordinate myPoint = new Coordinate(38.45, -119.33);
+
+        Instant start = Instant.now();
+
+        double actual = DistanceOutsidePolygon.distanceFromPolygon(myPoint, polygon);
+
+        Instant finish = Instant.now();
+
+        double elapsed = Duration.between(start, finish).toMillis();
+
+        boolean benchmark;
+        if (elapsed < expected){
+            benchmark = true;
+        } else {
+            benchmark = false;
+        }
+
+        assertTrue(benchmark);
+
     }
 }
