@@ -11,9 +11,6 @@ public class SavedDataModel {
 
     public void setMessageNumber(String messageNumber) {
         this.messageNumber = messageNumber.toUpperCase();
-        for (int i = 0; this.messageNumber.length() < 8; i++) {
-            this.messageNumber = "0" + this.messageNumber;
-        }
     }
 
     public String getUri() {

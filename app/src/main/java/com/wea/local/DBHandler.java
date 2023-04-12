@@ -33,7 +33,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(CMAC_MESSAGE_NO_COL, Integer.toString(collectedDeviceData.getMessageNumber(), 16));
+        values.put(CMAC_MESSAGE_NO_COL, String.format("%1$08X", collectedDeviceData.getMessageNumber()));
         values.put(CMAC_URI_NO_COL, uri);
         values.put(CMAC_DATETIME_NO_COL, collectedDeviceData.getTimeReceived());
 
@@ -44,7 +44,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public boolean removeCMACAlert(String cmacMessageNo) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        return db.delete(CMAC_ALERT_TABLE_NAME, "messageNumber" + "=" + cmacMessageNo, null) > 0;
+        return db.delete(CMAC_ALERT_TABLE_NAME, "messageNumber " + " = '" + cmacMessageNo + "'", null) > 0;
     }
 
     public List<String> readCMACS() {
