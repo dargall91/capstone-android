@@ -34,7 +34,7 @@ public class DistanceOutsidePolygon {
     }
 
     public static double distanceFromPolygon(Coordinate point, String polygonString) {
-        if (polygonString == null || polygonString.isEmpty()) {
+        if (polygonString == null || polygonString.isEmpty() || point == null) {
             return 0.0;
         }
 
@@ -94,6 +94,19 @@ public class DistanceOutsidePolygon {
             }
         }
 
-        return shortestDist;
+        return getDistanceInMiles(point, closestPointOnPoly);
+
+    }
+
+    private static double getDistanceInMiles(Coordinate location, Coordinate closestPoint) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = Math.toRadians(closestPoint.getLatitude() - location.getLatitude());  // deg2rad below
+        double dLon = Math.toRadians(closestPoint.getLongitude() - location.getLongitude());
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(Math.toRadians(location.getLatitude())) * Math.cos(Math.toRadians(closestPoint.getLatitude())) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c * 0.621;
     }
 }

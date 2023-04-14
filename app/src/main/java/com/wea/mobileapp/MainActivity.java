@@ -135,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
                 Coordinate userLocation = LocationUtils.getGPSLocation();
                 double distanceFromPolygon = DistanceOutsidePolygon.distanceFromPolygon(userLocation, polygon);
-                deviceData.setDistanceFromPolygon(distanceFromPolygon);
+                double distanceFormatted = Double.parseDouble(String.format("%.2f", distanceFromPolygon));
+                deviceData.setDistanceFromPolygon(distanceFormatted);
             }
 
             deviceData.setOptedOut(userOptedOut(message));

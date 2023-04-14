@@ -57,9 +57,11 @@ public class CMACRVAdapter extends RecyclerView.Adapter<CMACRVAdapter.ViewHolder
             TextView locationAvailable = dataLayout.findViewById(R.id.location_available);
             locationAvailable.setText(String.valueOf(collectedDeviceData.isLocationAvailable()));
             TextView distance = dataLayout.findViewById(R.id.distance);
-            distance.setText(String.valueOf(collectedDeviceData.getDistanceFromPolygon()));
+            distance.setText(String.format("%s mi", collectedDeviceData.getDistanceFromPolygon()));
             TextView optedOut = dataLayout.findViewById(R.id.opted_out);
             optedOut.setText(String.valueOf(collectedDeviceData.isOptedOut()));
+
+            System.out.println(optedOut.getText());
 
             if (collectedDeviceData.isMessagePresented()) {
                 timePresentedText.setText(collectedDeviceData.getTimeDisplayed());

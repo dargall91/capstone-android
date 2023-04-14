@@ -85,6 +85,7 @@ public class LocationUtils {
             globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
+        coordinate.set(new Coordinate(40, -76.75));
         return coordinate.get();
     }
 
