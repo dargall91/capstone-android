@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/collected_data_layout"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:columnCount="2"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Message Number:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/message_number" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Time Received:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/time_received" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:id="@+id/time_presented"
+        android:text="Time Presented:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/time_presented_text" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Inside Area:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/received_inside" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Message Presented:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/message_presented" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Location Available:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/location_available" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Distance From Area:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/distance" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Opted Out:" />
+
+    <TextView
+        android:layout_gravity="fill"
+        android:layout_columnWeight="1"
+        android:textColor="@color/black"
+        android:id="@+id/opted_out" />
+
+</GridLayout>

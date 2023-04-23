@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CMACMessage;
 import com.wea.models.CollectedDeviceData;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cmac_device_local";
@@ -32,7 +33,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(CMAC_MESSAGE_NO_COL, Integer.toString(collectedDeviceData.getMessageNumber(), 16));
+        values.put(CMAC_MESSAGE_NO_COL, String.format("%1$08X", collectedDeviceData.getMessageNumber()));
         values.put(CMAC_URI_NO_COL, uri);
         values.put(CMAC_DATETIME_NO_COL, collectedDeviceData.getTimeReceived());
 
@@ -40,30 +41,48 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void removeCMACAlert(String cmacMessageNo) {
+    public boolean removeCMACAlert(String cmacMessageNo) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "WHERE " + CMAC_MESSAGE_NO_COL + " = ";
-        String[] args = {cmacMessageNo};
-
-        db.delete(db.toString(), query, args);
+        return db.delete(CMAC_ALERT_TABLE_NAME, "messageNumber " + " = '" + cmacMessageNo + "'", null) > 0;
     }
 
-    public ArrayList<String> readCMACS() {
+    public List<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
 
-        ArrayList<String> cmacModalArrayList = new ArrayList<>();
+        List<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(0)).getMessageNumber());
+                cmacModalArrayList.add(cursorCMAC.getString(0));
             } while (cursorCMAC.moveToNext());
         }
 
         cursorCMAC.close();
         return cmacModalArrayList;
+    }
+
+    public List<SavedDataModel> getAllRows() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
+
+        List<SavedDataModel> savedDataList = new ArrayList<>();
+
+        if (cursorCMAC.moveToFirst()) {
+            do {
+                SavedDataModel model = new SavedDataModel();
+                model.setMessageNumber(cursorCMAC.getString(0));
+                model.setUri(cursorCMAC.getString(1));
+                model.setDateTime(cursorCMAC.getString(2));
+                savedDataList.add(model);
+            } while (cursorCMAC.moveToNext());
+        }
+
+        cursorCMAC.close();
+        return savedDataList;
     }
 
     public DBHandler(Context context){
