@@ -1,85 +1,78 @@
 package com.wea.local;
 
+import com.wea.models.Coordinate;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class DistanceOutsidePolygon {
 
-    private static Double vectorLength(Double[] vector) {
-        return Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
+    private static Double vectorLength(Coordinate vector) {
+        return Math.sqrt(vector.getLatitude() * vector.getLatitude() + vector.getLongitude() * vector.getLongitude());
     }
 
-    private static Double[] vectorNegate(Double[] vector) {
-        Double[] negative = {-vector[0], -vector[1]};
-        return negative;
+    private static Coordinate vectorNegate(Coordinate vector) {
+        return new Coordinate(vector.getLatitude() * -1, vector.getLongitude() * -1);
     }
 
-    private static Double[] vectorAdd(Double[] vector1, Double[] vector2) {
-        Double[] addition = {vector1[0] + vector2[0], vector1[1] + vector2[1]};
-        return addition;
+    private static Coordinate vectorAdd(Coordinate vector1, Coordinate vector2) {
+        return new Coordinate(vector1.getLatitude() + vector2.getLatitude(),
+                vector1.getLongitude() + vector2.getLongitude());
     }
 
-    private static Double[] vectorSubtract(Double[] vector1, Double[] vector2) {
-        Double[] subtraction = {vector1[0] - vector2[0], vector1[1] - vector2[1]};
-        return subtraction;
+    private static Coordinate vectorSubtract(Coordinate vector1, Coordinate vector2) {
+        return new Coordinate(vector1.getLatitude() - vector2.getLatitude(),
+                vector1.getLongitude() - vector2.getLongitude());
     }
 
-    private static Double[] vectorScale(Double[] vector, Double factor) {
-        Double[] scaled = {vector[0] * factor, vector[1] * factor};
-        return scaled;
+    private static Coordinate vectorScale(Coordinate vector, Double factor) {
+        return new Coordinate(vector.getLatitude() * factor, vector.getLongitude() * factor);
     }
 
-    private static Double[] vectorNormalization(Double[] vector) {
-        Double[] normalized = {-vector[1], vector[0]};
-        return normalized;
+    private static Coordinate vectorNormalization(Coordinate vector) {
+        return new Coordinate(vector.getLongitude() * -1, vector.getLatitude());
     }
 
-    public static Double[] closestPointOnPolygon(Double[] point, String coords) {
-
-        String[] coordsSplit = coords.split(" ");
-//        String[] x = new String[coordsSplit.length];
-//        String[] y = new String[coordsSplit.length];
-
-        ArrayList<Double[]> poly = new ArrayList<>();
-
-        for (int i = 0; i < coordsSplit.length; i++){
-            String[] temp = coordsSplit[i].split(",");
-            Double[] singlePoint = {Double.parseDouble(temp[0]), Double.parseDouble(temp[1])};
-            poly.add(singlePoint);
+    public static double distanceFromPolygon(Coordinate point, String polygonString) {
+        if (polygonString == null || polygonString.isEmpty() || point == null) {
+            return 0.0;
         }
 
-//
-//        for(int i = 0; i < coordsSplit.length; i++){
-//
-//        }
+        List<Coordinate> polygon = new ArrayList<>();
+        List<String> splitPolygonString = List.of(polygonString.split(" "));
 
-        Double shortestDist = Double.MAX_VALUE;
-        Double[] closestPointOnPoly = poly.get(0);
+        for (String coordinatePair : splitPolygonString) {
+            List<String> coordinateString = List.of(coordinatePair.split(","));
+            polygon.add(new Coordinate(Double.parseDouble(coordinateString.get(0)),
+                    Double.parseDouble(coordinateString.get(1))));
+        }
 
-        for (int i = 0; i < poly.size(); i++) {
-            int prev = (i == 0 ? poly.size() : i) - 1;
-            Double[] p1 = poly.get(i);
-            Double[] p2 = poly.get(prev);
-            Double[] line = vectorSubtract(p2, p1);
+        double shortestDist = Double.MAX_VALUE;
+        Coordinate closestPointOnPoly = polygon.get(0);
 
-            if (vectorLength(line) == 0) return new Double[]{vectorLength(vectorSubtract(point, p1)), 0.0};
-
-            Double[] norm = vectorNormalization(line);
-            double x1 = point[0];
-            double x2 = norm[0];
-            double x3 = p1[0];
-            double x4 = line[0];
-            double y1 = point[1];
-            double y2 = norm[1];
-            double y3 = p1[1];
-            double y4 = line[1];
+        for (int i = 1; i < polygon.size(); i++) {
+            int prev = i - 1;
+            Coordinate p1 = polygon.get(i);
+            Coordinate p2 = polygon.get(prev);
+            Coordinate line = vectorSubtract(p2, p1);
+            
+            Coordinate norm = vectorNormalization(line);
+            double x1 = point.getLatitude();
+            double x2 = norm.getLatitude();
+            double x3 = p1.getLatitude();
+            double x4 = line.getLatitude();
+            double y1 = point.getLongitude();
+            double y2 = norm.getLongitude();
+            double y3 = p1.getLongitude();
+            double y4 = line.getLongitude();
             double j = (x3 - x1 - (x2 * y3) / y2 + (x2 * y1) / y2) / ((x2 * y4) / y2 - x4);
 
-            Double[] currentPointToPoly;
+            Coordinate currentPointToPoly;
             double currentDistanceToPoly;
             if (j < 0 || j > 1) {
-                Double[] a = vectorSubtract(point, p1);
+                Coordinate a = vectorSubtract(point, p1);
                 double aLen = vectorLength(a);
-                Double[] b = vectorSubtract(point, p2);
+                Coordinate b = vectorSubtract(point, p2);
                 double bLen = vectorLength(b);
                 if (aLen < bLen) {
                     currentPointToPoly = vectorNegate(a);
@@ -101,7 +94,19 @@ public class DistanceOutsidePolygon {
             }
         }
 
-        return new Double[] {closestPointOnPoly[0], closestPointOnPoly[1], shortestDist};
+        return getDistanceInMiles(point, closestPointOnPoly);
+
     }
 
+    private static double getDistanceInMiles(Coordinate location, Coordinate closestPoint) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = Math.toRadians(closestPoint.getLatitude() - location.getLatitude());  // deg2rad below
+        double dLon = Math.toRadians(closestPoint.getLongitude() - location.getLongitude());
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(Math.toRadians(location.getLatitude())) * Math.cos(Math.toRadians(closestPoint.getLatitude())) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c * 0.621;
+    }
 }

@@ -10,6 +10,8 @@ public class CMACMessage {
     private String messageNumber;
     @PropertyElement(name = "Cmac_cap_identifier")
     private String capIdentifier;
+    @PropertyElement(name = "Cmac_message_type")
+    private String messageType;
     @PropertyElement(name = "CMAC_sent_date_time")
     private String sentDateTime;
     @Element(name = "CMAC_alert_info")
@@ -24,6 +26,12 @@ public class CMACMessage {
     public void setCapIdentifier(String capIdentifier) {
         this.capIdentifier = capIdentifier;
     }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {this.messageType = messageType;}
 
     public void setSentDateTime(String sentDateTime) {
         this.sentDateTime = sentDateTime;

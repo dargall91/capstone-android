@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.Build;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -17,7 +16,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.Task;
 
 import androidx.annotation.NonNull;
@@ -27,12 +26,12 @@ import androidx.core.app.ActivityCompat;
 
 import com.snatik.polygon.Point;
 import com.snatik.polygon.Polygon;
+import com.wea.models.CMACMessage;
 import com.wea.models.Coordinate;
 
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LocationUtils {
@@ -47,10 +46,10 @@ public class LocationUtils {
     public static void init(Context context, Activity activity) {
         globalActivity = activity;
         globalContext = context;
-        globalLocationRequest = LocationRequest.create();
-        globalLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        globalLocationRequest.setInterval(5000);
-        globalLocationRequest.setFastestInterval(2000);
+        LocationRequest.Builder locationBuilder = new LocationRequest.Builder(5000);
+        locationBuilder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+        locationBuilder.setWaitForAccurateLocation(true);
+        globalLocationRequest = locationBuilder.build();
         turnOnGPS();
     }
 
@@ -63,31 +62,30 @@ public class LocationUtils {
 
         boolean gpsServices = isGPSEnabled();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(globalContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(@NonNull LocationResult locationResult) {
-                        super.onLocationResult(locationResult);
-                        LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
+        if (ActivityCompat.checkSelfPermission(globalContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.getFusedLocationProviderClient(globalActivity).requestLocationUpdates(globalLocationRequest, new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    LocationServices.getFusedLocationProviderClient(globalActivity).removeLocationUpdates(this);
 
-                        if (locationResult != null && locationResult.getLocations().size() > 0) {
-                            int index = locationResult.getLocations().size() - 1;
-                            double latitude = locationResult.getLocations().get(index).getLatitude();
-                            double longitude = locationResult.getLocations().get(index).getLongitude();
-                            coordinate.set(new Coordinate(latitude, longitude));
+                    if (locationResult.getLocations().size() > 0) {
+                        int index = locationResult.getLocations().size() - 1;
+                        double latitude = locationResult.getLocations().get(index).getLatitude();
+                        double longitude = locationResult.getLocations().get(index).getLongitude();
+                        coordinate.set(new Coordinate(latitude, longitude));
 
-                            System.out.println("GETTING DEVICE LOCATION");
-                            System.out.println(latitude);
-                            System.out.println(longitude);
-                        }
+                        System.out.println("GETTING DEVICE LOCATION");
+                        System.out.println(latitude);
+                        System.out.println(longitude);
                     }
-                }, Looper.getMainLooper());
-            } else {
-                globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            }
+                }
+            }, Looper.getMainLooper());
+        } else {
+            globalActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
+        coordinate.set(new Coordinate(40, -76.75));
         return coordinate.get();
     }
 
@@ -171,5 +169,20 @@ public class LocationUtils {
         Point point = new Point(myPoint[0], myPoint[1]);
 
         return poly.contains(point);
+    }
+
+    public static boolean isInsideArea(CMACMessage message) {
+        String polygon = message.getAlertInfo().getAlertAreaList().get(0).getPolygon();
+        if (polygon == null || polygon.isEmpty()) {
+            return false;
+        }
+
+        Coordinate currentLocation = LocationUtils.getGPSLocation();
+        if (currentLocation == null) {
+            return false;
+        }
+
+        Double[] currentCoordinates = { currentLocation.getLatitude(), currentLocation.getLongitude() };
+        return LocationUtils.isInsideArea(polygon, currentCoordinates);
     }
 }

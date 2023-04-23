@@ -1,21 +1,32 @@
 package com.wea.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CollectedDeviceData {
     private int messageNumber;
     private String capIdentifier;
     private String timeReceived;
     private String timeDisplayed;
     private boolean receivedInside;
-    private boolean displayedInside;
     private boolean messagePresented;
     private boolean locationAvailable;
-    private float distanceFromPolygon;
+    private double distanceFromPolygon;
+    private boolean optedOut;
+
+    public CollectedDeviceData() { }
 
     public CollectedDeviceData(CMACMessage message, boolean locationAvailable, boolean receivedInside) {
         messageNumber = Integer.parseInt(message.getMessageNumber(), 16);
-        capIdentifier = message.getCapIdentifier();;
+        capIdentifier = message.getCapIdentifier();
+        timeReceived = OffsetDateTime.now(ZoneOffset.UTC).withNano(0).toString();
         this.locationAvailable = locationAvailable;
         this.receivedInside = receivedInside;
+        distanceFromPolygon = 0.0;
+        optedOut = false;
     }
 
     public int getMessageNumber() {
@@ -58,14 +69,6 @@ public class CollectedDeviceData {
         this.receivedInside = receivedInside;
     }
 
-    public boolean isDisplayedInside() {
-        return displayedInside;
-    }
-
-    public void setDisplayedInside(boolean displayedInside) {
-        this.displayedInside = displayedInside;
-    }
-
     public boolean isMessagePresented() {
         return messagePresented;
     }
@@ -82,11 +85,19 @@ public class CollectedDeviceData {
         this.locationAvailable = locationAvailable;
     }
 
-    public float getDistanceFromPolygon() {
+    public double getDistanceFromPolygon() {
         return distanceFromPolygon;
     }
 
-    public void setDistanceFromPolygon(float distanceFromPolygon) {
+    public void setDistanceFromPolygon(double distanceFromPolygon) {
         this.distanceFromPolygon = distanceFromPolygon;
+    }
+
+    public boolean isOptedOut() {
+        return optedOut;
+    }
+
+    public void setOptedOut(boolean optedOut) {
+        this.optedOut = optedOut;
     }
 }

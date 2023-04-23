@@ -6,15 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.wea.local.model.CMACMessageModel;
+import com.wea.models.CMACMessage;
 import com.wea.models.CollectedDeviceData;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "cmac_device_local";
     private static final int DB_VERSION = 1;
-    private static final String CMAC_MESSAGE_TABLE_NAME = "cmac_message";
     private static final String CMAC_ALERT_TABLE_NAME = "cmac_alert";
     private static final String CMAC_MESSAGE_NO_COL = "messageNumber";
     private static final String CMAC_URI_NO_COL = "uri";
@@ -23,7 +23,9 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + CMAC_ALERT_TABLE_NAME + " ("
-                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL)";
+                + CMAC_MESSAGE_NO_COL + " TEXT PRIMARY KEY NOT NULL, "
+                + CMAC_URI_NO_COL + " TEXT,"
+                + CMAC_DATETIME_NO_COL + " TEXT)";
         db.execSQL(query);
     }
 
@@ -31,7 +33,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(CMAC_MESSAGE_NO_COL, Integer.toString(collectedDeviceData.getMessageNumber(), 16));
+        values.put(CMAC_MESSAGE_NO_COL, String.format("%1$08X", collectedDeviceData.getMessageNumber()));
         values.put(CMAC_URI_NO_COL, uri);
         values.put(CMAC_DATETIME_NO_COL, collectedDeviceData.getTimeReceived());
 
@@ -39,30 +41,48 @@ public class DBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void removeCMACAlert(String cmacMessageNo) {
+    public boolean removeCMACAlert(String cmacMessageNo) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "WHERE " + CMAC_MESSAGE_NO_COL + " = ";
-        String[] args = {cmacMessageNo};
-
-        db.delete(db.toString(), query, args);
+        return db.delete(CMAC_ALERT_TABLE_NAME, "messageNumber " + " = '" + cmacMessageNo + "'", null) > 0;
     }
 
-    public ArrayList<String> readCMACS() {
+    public List<String> readCMACS() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_MESSAGE_TABLE_NAME, null);
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
 
-        ArrayList<String> cmacModalArrayList = new ArrayList<>();
+        List<String> cmacModalArrayList = new ArrayList<>();
 
         if (cursorCMAC.moveToFirst()) {
             do {
-                cmacModalArrayList.add(new CMACMessageModel(cursorCMAC.getString(1)).getMessageNumber());
+                cmacModalArrayList.add(cursorCMAC.getString(0));
             } while (cursorCMAC.moveToNext());
         }
 
         cursorCMAC.close();
         return cmacModalArrayList;
+    }
+
+    public List<SavedDataModel> getAllRows() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorCMAC = db.rawQuery("SELECT * FROM " + CMAC_ALERT_TABLE_NAME, null);
+
+        List<SavedDataModel> savedDataList = new ArrayList<>();
+
+        if (cursorCMAC.moveToFirst()) {
+            do {
+                SavedDataModel model = new SavedDataModel();
+                model.setMessageNumber(cursorCMAC.getString(0));
+                model.setUri(cursorCMAC.getString(1));
+                model.setDateTime(cursorCMAC.getString(2));
+                savedDataList.add(model);
+            } while (cursorCMAC.moveToNext());
+        }
+
+        cursorCMAC.close();
+        return savedDataList;
     }
 
     public DBHandler(Context context){
@@ -71,7 +91,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + CMAC_MESSAGE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CMAC_ALERT_TABLE_NAME);
         onCreate(db);
     }
 
